@@ -26,9 +26,9 @@ public:
 	
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	// testing TobjectPtr for this file. seeing if it works or what it does
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Force")
 	TObjectPtr<UStaticMeshComponent> StaticMesh;
 	
