@@ -36,6 +36,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	USpringArmComponent* SpringArm;
 	
+	UFUNCTION()
+	void ApplyForceToPlayer(FVector ForceToApply);
 
 protected:
 	// Called when the game starts or when spawned
@@ -63,5 +65,7 @@ protected:
 	
 	UFUNCTION()
 	void UpdateCurrentSpeed();
+	
+	
 	
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/TimerHandle.h"
 #include "EnemySpawnManager.generated.h"
 
 class UBoxComponent;
@@ -32,5 +33,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Bounds")
 	TObjectPtr<UBoxComponent> EnemySpawnBounds;
+	
+	FTimerHandle WaveSpawner_TimeHandler;
 
 };

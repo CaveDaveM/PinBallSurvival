@@ -56,7 +56,7 @@ protected:
 		const FHitResult& SweepResult);
 	
 	UFUNCTION(BlueprintCallable, Category = "Pushback")
-	void ApplyForceToPlayer();
+	void ApplyForceToPlayerLocal();
 
 
 private:

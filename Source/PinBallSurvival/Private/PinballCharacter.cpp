@@ -67,6 +67,7 @@ void APinballCharacter::UpdateCurrentSpeed()
 		FString::Printf(TEXT("MyValue: %f"), MovementSpeed));
 }
 
+
 void APinballCharacter::MoveInput(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -89,6 +90,12 @@ void APinballCharacter::DoMove(FVector2D MoveVector)
 	Vectors.Y = MoveVector.Y * 100;
 	Vectors.Z = 0.0f;
 	PlayerMesh->AddImpulse(Vectors);
+}
+
+void APinballCharacter::ApplyForceToPlayer(FVector ForceToApply)
+{
+	PlayerMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	PlayerMesh->AddImpulse(ForceToApply);
 }
 
 

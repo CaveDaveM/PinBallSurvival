@@ -37,8 +37,7 @@ void Aflippers::BeginPlay()
 	
 	BoxOverlapComp->OnComponentBeginOverlap.AddDynamic(this, &Aflippers::OnBeginOverlap);
 	
-	/** the check cast here assumes that the cast will not fail. bad practice as the impossible is never impossible
-		when code is concerned. reference "the pragmatic programming". **/ 
+	/** the check cast here assumes that the cast will not fail. bad practice. reference "the pragmatic programming". **/ 
 	PlayerCharacter = CastChecked<APinballCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (PlayerCharacter)
 	{
@@ -56,16 +55,16 @@ void Aflippers::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (OtherActor == PlayerCharacter)
 	{
-		ApplyForceToPlayer();
+		ApplyForceToPlayerLocal();
 	}
 }
 
-void Aflippers::ApplyForceToPlayer()
+void Aflippers::ApplyForceToPlayerLocal()
 {
 	FVector RotationOfArrow = ArrowComponent->GetForwardVector();
 	FVector RotationAndMagnitude = RotationOfArrow * PushStrength;
 	UE_LOG(GameInfo, Warning, TEXT("RotationOfArrow Vector = %s"), *RotationAndMagnitude.ToString());
-	PlayerCharacter->PlayerMesh->AddImpulse(RotationAndMagnitude,NAME_None,true);
+	PlayerCharacter->ApplyForceToPlayer(RotationAndMagnitude);
 }
 
 // Called every frame

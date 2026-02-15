@@ -19,26 +19,27 @@ AEnemySpawnManager::AEnemySpawnManager()
 void AEnemySpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
-	const FVector Extent = EnemySpawnBounds->GetScaledBoxExtent();
+	
+	/** NOTE: i do not like this implementation, its static and doesnt allow for a change of spawner shape.
+	 * TODO: Find a way to make this a dynamic spawn location **/
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	// Box transform
-	const FTransform& Transform = EnemySpawnBounds->GetComponentTransform();
+	FVector SpawnLocation = FVector(
+		FMath::RandRange(-9210.0f, 8710.0f),
+		FMath::RandRange(-6970.0f, 6290.0f),
+		50.0f);
 
-	// Local-space corners (bottom face, Z = -Extent.Z)
-	TArray<FVector> LocalCorners =
-	{
-		FVector( Extent.X,  Extent.Y, -Extent.Z),
-		FVector( Extent.X, -Extent.Y, -Extent.Z),
-		FVector(-Extent.X, -Extent.Y, -Extent.Z),
-		FVector(-Extent.X,  Extent.Y, -Extent.Z)
-	};
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	
+	DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 12, FColor::Red, true, 250.0f);
 
-	// Convert to world space
-	TArray<FVector> WorldCorners;
-	for (const FVector& Corner : LocalCorners)
-	{
-		WorldCorners.Add(Transform.TransformPosition(Corner));
-	}
+	/*AEnemyBase* Enemy = GetWorld()->SpawnActor<AEnemyBase>(
+		CurrentWaveData->Sections[SectionInt].Enemy,
+		SpawnLocation,
+		SpawnRotation,
+		SpawnParams);*/
 	
 	
 }
