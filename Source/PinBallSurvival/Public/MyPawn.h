@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "MyPawn.generated.h"
 
+class UFloatingPawnMovement;
+
 UCLASS()
 class PINBALLSURVIVAL_API AMyPawn : public APawn
 {
@@ -15,9 +17,15 @@ public:
 	// Sets default values for this pawn's properties
 	AMyPawn();
 
+		
+	UPROPERTY(editanywhere)
+	UStaticMeshComponent* PawnMeshComponent;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(VisibleAnywhere)
+	UFloatingPawnMovement* FloatingPawnMovement;
 
 public:	
 	// Called every frame

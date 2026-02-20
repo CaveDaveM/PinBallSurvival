@@ -58,11 +58,7 @@ FVector AEnemyAIController::GetPlayerLocation()
 void AEnemyAIController::MoveEnemyToPlayer()
 {
 	FVector PlayerLocation = GetPlayerLocation();
-
-	FNavLocation NavigationLocation;
-	if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, 400.0f,NavigationLocation))
-	{
-		MoveToLocation(NavigationLocation.Location,10.0f,false,true,true,false,0,true);
-	}
+	
+	MoveToLocation(PlayerLocation,10.0f,false,true,true,false,0,true);
 }
 
