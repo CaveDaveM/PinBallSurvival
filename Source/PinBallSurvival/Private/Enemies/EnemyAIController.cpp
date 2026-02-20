@@ -3,10 +3,24 @@
 
 #include "Enemies/EnemyAIController.h"
 
+#include "NavigationSystem.h"
 #include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY(EnemyAILOG);
 
 AEnemyAIController::AEnemyAIController()
 {
+}
+
+void AEnemyAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	
+	OwningPawn = InPawn;
+	if (OwningPawn == nullptr)
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT(" Not Found Owning Pawn"))
+	}
 }
 
 
@@ -15,7 +29,10 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	
 	PlayerCharacterReference = Cast<APawn>(UGameplayStatics::GetPlayerPawn(this, 0));
-	if (PlayerCharacterReference)
+	
+	NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	
+	if (PlayerCharacterReference && OwningPawn && NavSystem)
 	{
 		GetWorld()->GetTimerManager().SetTimer(
 			Action_TimeHandler,
@@ -24,14 +41,28 @@ void AEnemyAIController::BeginPlay()
 			0.5f,
 			true);
 	}
+	
+}
+FVector AEnemyAIController::GetPlayerLocation()
+{
+	if (!PlayerCharacterReference)
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT(" Not Found Owning Pawn"))
+		return FVector::ZeroVector;
+	}
+	
+	FVector PlayerLocation = PlayerCharacterReference->GetActorLocation();
+	return PlayerLocation;
 }
 
 void AEnemyAIController::MoveEnemyToPlayer()
 {
-}
+	FVector PlayerLocation = GetPlayerLocation();
 
-FVector AEnemyAIController::FindPlayerLocation()
-{
-	return FVector::ZeroVector;
+	FNavLocation NavigationLocation;
+	if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, 400.0f,NavigationLocation))
+	{
+		MoveToLocation(NavigationLocation.Location,10.0f,false,true,true,false,0,true);
+	}
 }
 
