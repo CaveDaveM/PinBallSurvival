@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/EnemyInterface.h"
 #include "EnemyBaseClass.generated.h"
 
 UCLASS()
-class PINBALLSURVIVAL_API AEnemyBaseClass : public ACharacter
+class PINBALLSURVIVAL_API AEnemyBaseClass : public ACharacter, public IEnemyInterface
 {
 	GENERATED_BODY()
 	

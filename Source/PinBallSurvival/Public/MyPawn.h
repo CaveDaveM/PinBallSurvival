@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Interfaces/EnemyInterface.h"
 #include "MyPawn.generated.h"
 
 class UFloatingPawnMovement;
 
 UCLASS()
-class PINBALLSURVIVAL_API AMyPawn : public APawn
+class PINBALLSURVIVAL_API AMyPawn : public APawn, public IEnemyInterface
 {
 	GENERATED_BODY()
 

@@ -3,6 +3,7 @@
 
 #include "Enemies/EnemyBaseClass.h"
 
+#include "EPinCollisionChannel.h"
 #include "Enemies/EnemyAIController.h"
 
 // Sets default values
@@ -15,7 +16,6 @@ AEnemyBaseClass::AEnemyBaseClass()
 	
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	SetRootComponent(StaticMeshComponent);
-
 }
 
 // Called when the game starts or when spawned

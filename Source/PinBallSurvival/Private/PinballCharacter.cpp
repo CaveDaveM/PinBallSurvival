@@ -4,6 +4,10 @@
 #include "PinballCharacter.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
+#include "EPinCollisionChannel.h"
+#include "MyPawn.h"
+#include "ProjectileWeapons.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -22,18 +26,24 @@ APinballCharacter::APinballCharacter()
 	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("SpringArm"));
 	SpringArm->SetupAttachment(PlayerMesh);
-		
 	//Attach the Camera to the SpringArmComponent
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
+	
+	PawnDetectionSphere->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
+// Called every frame
+void APinballCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+}
 void APinballCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	// Called when the game starts or when spawned
-
-	Super::BeginPlay();
 
 	check(GEngine != nullptr);
 
@@ -59,6 +69,8 @@ void APinballCharacter::BeginPlay()
 	
 }
 
+//MOVEMENT LOGIC
+
 void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
@@ -66,6 +78,7 @@ void APinballCharacter::UpdateCurrentSpeed()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
 		FString::Printf(TEXT("MyValue: %f"), MovementSpeed));
 }
+
 
 
 void APinballCharacter::MoveInput(const FInputActionValue& Value)
@@ -76,12 +89,6 @@ void APinballCharacter::MoveInput(const FInputActionValue& Value)
 	DoMove(MovementVector);
 }
 
-// Called every frame
-void APinballCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-}
 
 void APinballCharacter::DoMove(FVector2D MoveVector)
 {
@@ -116,4 +123,8 @@ void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Move Input Component invalid"));
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////TEMP STUFF WHILE I FIX
+//
 

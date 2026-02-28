@@ -3,18 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CombatantBaseClass.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h" 
 #include "GameFramework/Pawn.h"
 #include "PinballCharacter.generated.h"
 
+class ABasicProjectile;
+class UProjectileWeapons;
+class USphereComponent;
 class USpringArmComponent;
 struct FInputActionValue;
 class UInputAction;
 
 UCLASS()
-class PINBALLSURVIVAL_API APinballCharacter : public APawn
+class PINBALLSURVIVAL_API APinballCharacter : public ACombatantBaseClass
 {
 	GENERATED_BODY()
 
@@ -50,6 +54,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(FVector2D MoveVector);
 	
+	UFUNCTION()
+	void UpdateCurrentSpeed();
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputMappingContext> FirstPersonContext;
 	
@@ -62,10 +70,4 @@ protected:
 	
 	UPROPERTY()
 	FVector CurrentSpeed;
-	
-	UFUNCTION()
-	void UpdateCurrentSpeed();
-	
-	
-	
 };
