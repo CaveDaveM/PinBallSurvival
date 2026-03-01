@@ -2,7 +2,7 @@
 
 
 #include "ProjectileWeapons.h"
-
+#include "kismet/GameplayStatics.h"
 #include "CombatantBaseClass.h"
 #include "Projectile/BasicProjectile.h"
 
@@ -34,6 +34,7 @@ void UProjectileWeapons::BeginPlay()
 
 void UProjectileWeapons::SetProximityFromPawn()
 {
+	
 	ProximityEnemyArray = OwningPawn->ProximityEnemyArray;
 	
 }

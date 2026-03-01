@@ -19,9 +19,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	USphereComponent* PawnDetectionSphere;
-	
-	UPROPERTY(EditAnywhere)
-	UProjectileWeapons* ProjectileWeapons;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,6 +30,9 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+	
+	UPROPERTY(VisibleAnywhere)
+	UProjectileWeapons* ProjectileWeapons;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -17,6 +17,7 @@ ACombatantBaseClass::ACombatantBaseClass()
 	PawnDetectionSphere->SetSphereRadius(600.0f);
 	PawnDetectionSphere->SetGenerateOverlapEvents(true);
 	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	PawnDetectionSphere->SetCollisionObjectType(ECC_Pawn);
 	/*PawnDetectionSphere->SetCollisionObjectType(EPinCollisionChannel::ECC_Player);
 	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	PawnDetectionSphere->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Enemy, ECR_Overlap);*/
@@ -43,6 +44,7 @@ void ACombatantBaseClass::BeginPlay()
 void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,TEXT("Overlap"));
 	if (OtherActor != this)
 	{
 		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
