@@ -3,9 +3,9 @@
 
 #include "CombatantBaseClass.h"
 
-#include "ProjectileWeapons.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/EnemyInterface.h"
+#include "Projectile/BasicProjectile.h"
 
 // Sets default values
 ACombatantBaseClass::ACombatantBaseClass()
@@ -17,14 +17,8 @@ ACombatantBaseClass::ACombatantBaseClass()
 	PawnDetectionSphere->SetSphereRadius(600.0f);
 	PawnDetectionSphere->SetGenerateOverlapEvents(true);
 	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	PawnDetectionSphere->SetCollisionObjectType(ECC_Pawn);
-	/*PawnDetectionSphere->SetCollisionObjectType(EPinCollisionChannel::ECC_Player);
 	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	PawnDetectionSphere->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Enemy, ECR_Overlap);*/
-	//PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
-	
-	ProjectileWeapons = CreateDefaultSubobject<UProjectileWeapons>("ProjectileWeaponsComponents");
-
+	PawnDetectionSphere->SetCollisionResponseToChannel(ECC_Pawn,ECR_Overlap);
 
 }
 
@@ -32,13 +26,13 @@ ACombatantBaseClass::ACombatantBaseClass()
 void ACombatantBaseClass::BeginPlay()
 {
 	Super::BeginPlay();
-
-
-	if (ProjectileWeapons != nullptr)
-	{
-		PawnDetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACombatantBaseClass::OnOverlapBegin);
-	}
 	
+	GetWorld()->GetTimerManager().SetTimer(
+	FireWeapon_TimerHandle,
+	this,
+	&ACombatantBaseClass::FireWeapon,
+	1.0f,
+	true);
 }
 
 void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -50,7 +44,20 @@ void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
 		{
 			ProximityEnemyArray.Add(OtherActor);
-			ProjectileWeapons->SetProximityFromPawn();
+		}
+	}
+}
+
+void ACombatantBaseClass::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor != this)
+	{
+		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,TEXT("EndOverlap"));
+
+			ProximityEnemyArray.Remove(OtherActor);
 		}
 	}
 }
@@ -61,6 +68,30 @@ void ACombatantBaseClass::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ACombatantBaseClass::FireWeapon()
+{
+	
+	//NOTE: THIS IS ALL TEMP
+	GEngine->AddOnScreenDebugMessage(-1,2.0f, FColor::Green,"FireWeapon");
+
+	if (ProximityEnemyArray.Num() > 1)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,2.0f, FColor::Green,"ArrayMoreThan1");
+
+		AActor* CurrentTarget = ProximityEnemyArray[0];
+		FVector TargetLocation = CurrentTarget->GetActorLocation();
+		FVector CurrentLocation = GetActorLocation();
+		//Spawn Projectile
+		FRotator ProjectileRotation = (TargetLocation - CurrentLocation).Rotation();
+		FTransform SpawnTransform = FTransform(ProjectileRotation, GetOwner()->GetActorLocation());
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		GetWorld()->SpawnActor<ABasicProjectile>(ProjectileWeapons,SpawnTransform,SpawnParams);
+	}
+}
+
 
 // Called to bind functionality to input
 void ACombatantBaseClass::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

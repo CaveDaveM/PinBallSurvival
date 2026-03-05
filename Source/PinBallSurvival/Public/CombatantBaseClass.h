@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "CombatantBaseClass.generated.h"
 
-class UProjectileWeapons;
+class ABasicProjectile;
 class USphereComponent;
 
 UCLASS()
@@ -17,6 +17,11 @@ public:
 	// Sets default values for this character's properties
 	ACombatantBaseClass();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	UPROPERTY(EditDefaultsOnly)
 	USphereComponent* PawnDetectionSphere;
 protected:
@@ -31,18 +36,22 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 	
-	UPROPERTY(VisibleAnywhere)
-	UProjectileWeapons* ProjectileWeapons;
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION()
+	void OverlapEnd(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor, 
+		UPrimitiveComponent* 
+		OtherComp, 
+		int32 OtherBodyIndex);
 	
+	
+	UFUNCTION()
+	void FireWeapon();
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABasicProjectile> ProjectileWeapons;
 
 	UPROPERTY()
 	TArray<AActor*> ProximityEnemyArray;
-	UFUNCTION()
-	TArray<AActor*> GetProximityEnemyArray() {return ProximityEnemyArray;}
+	
+	FTimerHandle FireWeapon_TimerHandle;
 };

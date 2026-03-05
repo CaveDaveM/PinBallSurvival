@@ -4,9 +4,6 @@
 #include "PinballCharacter.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
-#include "EPinCollisionChannel.h"
-#include "MyPawn.h"
-#include "ProjectileWeapons.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 

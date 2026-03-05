@@ -34,9 +34,6 @@ void UProjectileWeapons::BeginPlay()
 
 void UProjectileWeapons::SetProximityFromPawn()
 {
-	
-	ProximityEnemyArray = OwningPawn->ProximityEnemyArray;
-	
 }
 
 void UProjectileWeapons::FireWeapon()

@@ -6,6 +6,7 @@
 #include "EPinCollisionChannel.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Interfaces/EnemyInterface.h"
 
 // Sets default values
 ABasicProjectile::ABasicProjectile()
@@ -45,7 +46,13 @@ void ABasicProjectile::BeginPlay()
 void ABasicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//Set the damage when the damage interface is made.
+	if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
+	{
+		if (IEnemyInterface* EnemyInterface = Cast<IEnemyInterface>(OtherActor))
+		{
+			EnemyInterface->ApplyDamage(ProjectileDamage);
+		}
+	}
 }
 
 

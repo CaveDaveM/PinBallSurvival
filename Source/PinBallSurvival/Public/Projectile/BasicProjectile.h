@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/EnemyInterface.h"
 #include "BasicProjectile.generated.h"
 
 class UProjectileMovementComponent;
@@ -20,6 +21,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* ProjectileMesh;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ProjectileDamage;
 	
 	UPROPERTY()
 	USphereComponent* OverlapComponent;
