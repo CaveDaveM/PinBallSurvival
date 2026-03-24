@@ -42,9 +42,17 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void DespawnProjectile();
 
+	UPROPERTY(EditDefaultsOnly)
+	float DespawnDelay = 5.0f
+	
 	UPROPERTY()
 	float Damage = 0;
+	
+	FTimerHandle Despawn_TimerHandle;
 
 public:	
 	// Called every frame

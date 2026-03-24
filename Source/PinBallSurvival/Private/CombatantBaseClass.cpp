@@ -3,6 +3,7 @@
 
 #include "CombatantBaseClass.h"
 
+#include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/EnemyInterface.h"
 #include "Projectile/BasicProjectile.h"
@@ -18,7 +19,7 @@ ACombatantBaseClass::ACombatantBaseClass()
 	PawnDetectionSphere->SetGenerateOverlapEvents(true);
 	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	PawnDetectionSphere->SetCollisionResponseToChannel(ECC_Pawn,ECR_Overlap);
+	PawnDetectionSphere->SetCollisionResponseToChannel(EPinBallCollisionChannel::ECC_Enemy,ECR_Overlap);
 
 }
 
@@ -26,6 +27,9 @@ ACombatantBaseClass::ACombatantBaseClass()
 void ACombatantBaseClass::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PawnDetectionSphere->OnComponentBeginOverlap.AddDynamic(this,&ACombatantBaseClass::OnOverlapBegin);
+	PawnDetectionSphere->OnComponentEndOverlap.AddDynamic(this,&ACombatantBaseClass::OverlapEnd);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 	FireWeapon_TimerHandle,
@@ -38,12 +42,13 @@ void ACombatantBaseClass::BeginPlay()
 void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,TEXT("Overlap"));
 	if (OtherActor != this)
 	{
 		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
 		{
 			ProximityEnemyArray.Add(OtherActor);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
+			FString::Printf(TEXT("Number Of Enemies: %d"), ProximityEnemyArray.Num()));
 		}
 	}
 }
@@ -55,8 +60,6 @@ void ACombatantBaseClass::OverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 	{
 		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
 		{
-			GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,TEXT("EndOverlap"));
-
 			ProximityEnemyArray.Remove(OtherActor);
 		}
 	}
@@ -71,20 +74,15 @@ void ACombatantBaseClass::Tick(float DeltaTime)
 
 void ACombatantBaseClass::FireWeapon()
 {
-	
-	//NOTE: THIS IS ALL TEMP
-	GEngine->AddOnScreenDebugMessage(-1,2.0f, FColor::Green,"FireWeapon");
-
 	if (ProximityEnemyArray.Num() > 1)
 	{
-		GEngine->AddOnScreenDebugMessage(-1,2.0f, FColor::Green,"ArrayMoreThan1");
 
 		AActor* CurrentTarget = ProximityEnemyArray[0];
 		FVector TargetLocation = CurrentTarget->GetActorLocation();
 		FVector CurrentLocation = GetActorLocation();
 		//Spawn Projectile
 		FRotator ProjectileRotation = (TargetLocation - CurrentLocation).Rotation();
-		FTransform SpawnTransform = FTransform(ProjectileRotation, GetOwner()->GetActorLocation());
+		FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
 		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

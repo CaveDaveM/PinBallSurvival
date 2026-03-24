@@ -72,8 +72,8 @@ void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
 	float MovementSpeed = MovementVectors.Size();
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
-		FString::Printf(TEXT("MyValue: %f"), MovementSpeed));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
+		//FString::Printf(TEXT("MyValue: %f"), MovementSpeed));
 }
 
 

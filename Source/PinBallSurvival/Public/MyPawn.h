@@ -7,6 +7,7 @@
 #include "Interfaces/EnemyInterface.h"
 #include "MyPawn.generated.h"
 
+class USphereComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
@@ -21,6 +22,9 @@ public:
 		
 	UPROPERTY(editanywhere)
 	UStaticMeshComponent* PawnMeshComponent;
+	
+	UPROPERTY(EditAnywhere)
+	USphereComponent* PawnOverlapComponent;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

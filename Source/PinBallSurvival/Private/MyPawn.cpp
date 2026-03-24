@@ -3,22 +3,28 @@
 
 #include "MyPawn.h"
 
+#include "PinBallCollisionChannels.h"
+#include "Components/SphereComponent.h"
 #include "Enemies/EnemyAIController.h"
 #include "GameFramework/FloatingPawnMovement.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	
 	AIControllerClass = AEnemyAIController::StaticClass();
 	
 	PawnMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	SetRootComponent(PawnMeshComponent);
 	
-	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
+	PawnOverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
+	PawnOverlapComponent->SetupAttachment(RootComponent);
+	PawnOverlapComponent->SetSphereRadius(25);
+	PawnOverlapComponent->SetGenerateOverlapEvents(true);
+	//PawnOverlapComponent->SetCollisionProfileName(TEXT("EnemyCollision"));
+	PawnOverlapComponent->SetCollisionObjectType(EPinBallCollisionChannel::ECC_Enemy);
+	PawnOverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
 	
+	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
 }
 
 // Called when the game starts or when spawned

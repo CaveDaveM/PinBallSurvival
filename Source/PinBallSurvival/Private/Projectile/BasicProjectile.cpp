@@ -41,6 +41,9 @@ void ABasicProjectile::BeginPlay()
 	
 	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this,&ABasicProjectile::OnOverlap);
 	
+	GetWorld()->GetTimerManager().SetTimer(
+		Despawn_TimerHandle,
+		this, &ABasicProjectile::DespawnProjectile, DespawnDelay);
 }
 
 void ABasicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,10 +59,16 @@ void ABasicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 }
 
 
+
 // Called every frame
 void ABasicProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABasicProjectile::DespawnProjectile()
+{
+	Destroy();
 }
 
