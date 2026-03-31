@@ -10,19 +10,18 @@
 
 //class AEnemyBase;
 
+class AMyPawn;
+
 USTRUCT()
 struct FWaveSection
 {
 	GENERATED_USTRUCT_BODY();
 	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> Enemy;
+	TSubclassOf<AMyPawn> Enemy;
 
 	UPROPERTY(EditAnywhere)
 	int16 Amount = 1;
-
-	UPROPERTY(EditAnywhere)
-	float EnemySpawnInterval = 1.0f;
 	
 };
 

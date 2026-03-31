@@ -29,8 +29,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	UFUNCTION()
+	void CheckHealth();
+
 	UPROPERTY(VisibleAnywhere)
 	UFloatingPawnMovement* FloatingPawnMovement;
+	
+	UPROPERTY()
+	float Health = 100;
+	
 
 public:	
 	// Called every frame
@@ -38,5 +45,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void ApplyDamage(float damage) override;
 };

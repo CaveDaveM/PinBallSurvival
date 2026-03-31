@@ -4,6 +4,7 @@
 #include "Enemies/EnemySpawnManager.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemySpawnManager::AEnemySpawnManager()
@@ -23,25 +24,49 @@ void AEnemySpawnManager::BeginPlay()
 	/** NOTE: i do not like this implementation, its static and doesnt allow for a change of spawner shape.
 	 * TODO: Find a way to make this a dynamic spawn location **/
 	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	FVector SpawnLocation = FVector(
-		FMath::RandRange(-9210.0f, 8710.0f),
-		FMath::RandRange(-6970.0f, 6290.0f),
-		50.0f);
-
-	FRotator SpawnRotation = FRotator::ZeroRotator;
-	
-	DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 12, FColor::Red, true, 250.0f);
-
-	/*AEnemyBase* Enemy = GetWorld()->SpawnActor<AEnemyBase>(
-		CurrentWaveData->Sections[SectionInt].Enemy,
-		SpawnLocation,
-		SpawnRotation,
-		SpawnParams);*/
+	PlayerReference = UGameplayStatics::GetPlayerPawn(this, 0);
 	
 	
+	//TEST STRUCT
+	TArray<int32> TestEnemyArray;
+	for (int32 i = 0; i < 16; ++i)
+	{
+		TestEnemyArray.Add(i);
+	}
+	EnemySpawnExampleTable.EnemiesToSpawn = TestEnemyArray;
+	
+	DebugTestLocations();
+}
+
+TArray<FVector> AEnemySpawnManager::FindSpawnOffsets(float radius)
+{
+	const float AngleStep = 360.0f / EnemySpawnExampleTable.EnemiesToSpawn.Num();
+	float CurrentAngle = 0.0f;
+	TArray<FVector> EnemiesSpawnOffset;
+	for (int i = 0; i < EnemySpawnExampleTable.EnemiesToSpawn.Num(); ++i)
+	{
+		float Radians = FMath::DegreesToRadians(CurrentAngle);
+		FVector SpawnOffset(
+			FMath::Cos(Radians) * radius,
+			FMath::Sin(Radians) * radius,
+			0.0f);
+		
+		EnemiesSpawnOffset.Add(SpawnOffset);
+		CurrentAngle += AngleStep;
+	}
+	
+	return EnemiesSpawnOffset;
+}
+
+void AEnemySpawnManager::DebugTestLocations()
+{
+	FVector PlayerLocation = PlayerReference->GetActorLocation();
+	TArray<FVector> EnemiesSpawnOffset = FindSpawnOffsets(500.0f);
+	for (int i = 0; i < EnemiesSpawnOffset.Num(); ++i)
+	{
+		FVector EnemySpawnLocation = PlayerLocation + EnemiesSpawnOffset[i];
+		DrawDebugSphere(GetWorld(),EnemySpawnLocation,25.0f,30,FColor::Red,true);
+	}
 }
 
 // Called every frame

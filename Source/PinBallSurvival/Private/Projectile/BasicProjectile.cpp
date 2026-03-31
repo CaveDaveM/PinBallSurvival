@@ -18,11 +18,11 @@ ABasicProjectile::ABasicProjectile()
 	SetRootComponent(ProjectileMesh);
 	
 	OverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
-	OverlapComponent->SetupAttachment(ProjectileMesh);
+	OverlapComponent->SetupAttachment(RootComponent);
 	OverlapComponent->SetGenerateOverlapEvents(true);
 	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapComponent->SetCollisionObjectType(EPinCollisionChannel::ECC_Bullet);
-	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
 	OverlapComponent->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Enemy, ECR_Overlap);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
@@ -39,16 +39,17 @@ void ABasicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this,&ABasicProjectile::OnOverlap);
+	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this,&ABasicProjectile::OnOverlaBegin);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		Despawn_TimerHandle,
 		this, &ABasicProjectile::DespawnProjectile, DespawnDelay);
 }
 
-void ABasicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void ABasicProjectile::OnOverlaBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 4.0f,FColor::Cyan,TEXT("ENEMY HIT"));
 	if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
 	{
 		if (IEnemyInterface* EnemyInterface = Cast<IEnemyInterface>(OtherActor))

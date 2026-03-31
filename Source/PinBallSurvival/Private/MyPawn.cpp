@@ -3,6 +3,7 @@
 
 #include "MyPawn.h"
 
+#include "EPinCollisionChannel.h"
 #include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "Enemies/EnemyAIController.h"
@@ -23,7 +24,8 @@ AMyPawn::AMyPawn()
 	//PawnOverlapComponent->SetCollisionProfileName(TEXT("EnemyCollision"));
 	PawnOverlapComponent->SetCollisionObjectType(EPinBallCollisionChannel::ECC_Enemy);
 	PawnOverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
-	
+	PawnOverlapComponent->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Bullet, ECR_Overlap);
+
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
 }
 
@@ -33,6 +35,7 @@ void AMyPawn::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
 
 // Called every frame
 void AMyPawn::Tick(float DeltaTime)
@@ -46,5 +49,21 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AMyPawn::CheckHealth()
+{
+	if (Health <= 0.f)
+	{
+		Destroy();
+	}
+}
+
+void AMyPawn::ApplyDamage(float damage)
+{
+	IEnemyInterface::ApplyDamage(damage);
+	
+	Health -= damage;
+	CheckHealth();
 }
 

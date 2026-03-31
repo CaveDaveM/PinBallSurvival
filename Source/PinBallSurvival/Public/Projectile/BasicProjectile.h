@@ -23,40 +23,35 @@ public:
 	UStaticMeshComponent* ProjectileMesh;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float ProjectileDamage;
-	
-	UPROPERTY()
 	USphereComponent* OverlapComponent;
 	
 	UPROPERTY()
 	UProjectileMovementComponent* ProjectileMovement;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
 	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent,
+	void OnOverlaBegin(UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 	UFUNCTION()
 	void DespawnProjectile();
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ProjectileDamage = 40.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DespawnDelay = 5.0f
-	
-	UPROPERTY()
-	float Damage = 0;
+	float DespawnDelay = 5.0f;
 	
 	FTimerHandle Despawn_TimerHandle;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	FORCEINLINE void SetProjectileDamage(const float SetDamage){Damage = SetDamage;}
+	FORCEINLINE void SetProjectileDamage(const float SetDamage){ProjectileDamage = SetDamage;}
 
 };

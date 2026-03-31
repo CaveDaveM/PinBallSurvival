@@ -74,7 +74,7 @@ void ACombatantBaseClass::Tick(float DeltaTime)
 
 void ACombatantBaseClass::FireWeapon()
 {
-	if (ProximityEnemyArray.Num() > 1)
+	if (ProximityEnemyArray.Num() > 0)
 	{
 
 		AActor* CurrentTarget = ProximityEnemyArray[0];
