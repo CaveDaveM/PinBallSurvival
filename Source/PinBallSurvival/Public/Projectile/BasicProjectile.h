@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/EnemyInterface.h"
+#include "Interfaces/HealthInterface.h"
 #include "BasicProjectile.generated.h"
 
 class UProjectileMovementComponent;
@@ -40,6 +40,7 @@ public:
 	
 	UFUNCTION()
 	void DespawnProjectile();
+	void CheckPiercingPower();
 	
 	UPROPERTY(EditDefaultsOnly)
 	float ProjectileDamage = 40.0f;
@@ -48,6 +49,12 @@ public:
 	float DespawnDelay = 5.0f;
 	
 	FTimerHandle Despawn_TimerHandle;
+	
+	UPROPERTY()
+	int32 NumberOfActorsHit = 0;
+	
+	UPROPERTY()
+	int32 PiercingPower = 16;
 
 public:	
 	// Called every frame

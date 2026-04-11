@@ -22,9 +22,9 @@ AMyPawn::AMyPawn()
 	PawnOverlapComponent->SetSphereRadius(25);
 	PawnOverlapComponent->SetGenerateOverlapEvents(true);
 	//PawnOverlapComponent->SetCollisionProfileName(TEXT("EnemyCollision"));
-	PawnOverlapComponent->SetCollisionObjectType(EPinBallCollisionChannel::ECC_Enemy);
+	PawnOverlapComponent->SetCollisionObjectType(ECC_ENEMY);
 	PawnOverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
-	PawnOverlapComponent->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Bullet, ECR_Overlap);
+	PawnOverlapComponent->SetCollisionResponseToChannel(ECC_BULLET, ECR_Overlap);
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
 }
@@ -59,11 +59,13 @@ void AMyPawn::CheckHealth()
 	}
 }
 
-void AMyPawn::ApplyDamage(float damage)
+void AMyPawn::ApplyDamage(float DamageAmount)
 {
-	IEnemyInterface::ApplyDamage(damage);
+	IHealthInterface::ApplyDamage(DamageAmount);
 	
-	Health -= damage;
+	Health -= DamageAmount;
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
+	FString::Printf(TEXT("MyValue: %f"), DamageAmount));
 	CheckHealth();
 }
 

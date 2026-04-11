@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Interfaces/EnemyInterface.h"
+#include "Interfaces/HealthInterface.h"
 #include "MyPawn.generated.h"
 
 class USphereComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class PINBALLSURVIVAL_API AMyPawn : public APawn, public IEnemyInterface
+class PINBALLSURVIVAL_API AMyPawn : public APawn, public IHealthInterface
 {
 	GENERATED_BODY()
 
@@ -45,5 +45,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void ApplyDamage(float damage) override;
+	virtual void ApplyDamage(float DamageAmount) override;
 };

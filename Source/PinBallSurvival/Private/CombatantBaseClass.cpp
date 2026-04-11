@@ -3,9 +3,9 @@
 
 #include "CombatantBaseClass.h"
 
+#include "EPinCollisionChannel.h"
 #include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
-#include "Interfaces/EnemyInterface.h"
 #include "Projectile/BasicProjectile.h"
 
 // Sets default values
@@ -19,7 +19,7 @@ ACombatantBaseClass::ACombatantBaseClass()
 	PawnDetectionSphere->SetGenerateOverlapEvents(true);
 	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	PawnDetectionSphere->SetCollisionResponseToChannel(EPinBallCollisionChannel::ECC_Enemy,ECR_Overlap);
+	PawnDetectionSphere->SetCollisionResponseToChannel(ECC_ENEMY,ECR_Overlap);
 
 }
 
@@ -44,7 +44,7 @@ void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 {
 	if (OtherActor != this)
 	{
-		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
+		if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 		{
 			ProximityEnemyArray.Add(OtherActor);
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
@@ -58,7 +58,7 @@ void ACombatantBaseClass::OverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 {
 	if (OtherActor != this)
 	{
-		if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
+		if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 		{
 			ProximityEnemyArray.Remove(OtherActor);
 		}
@@ -85,8 +85,15 @@ void ACombatantBaseClass::FireWeapon()
 		FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
 		
 		FActorSpawnParameters SpawnParams;
+		SpawnParams.Instigator = this;
+		
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<ABasicProjectile>(ProjectileWeapons,SpawnTransform,SpawnParams);
+		ABasicProjectile* Projectile = GetWorld()->SpawnActor<ABasicProjectile>(ProjectileWeapons,SpawnTransform,SpawnParams);
+		if (Projectile)
+		{
+			Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
+			Projectile->ProjectileDamage = TotalDamage;
+		}
 	}
 }
 

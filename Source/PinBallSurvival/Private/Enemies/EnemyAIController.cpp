@@ -21,6 +21,13 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(EnemyAILOG,Warning,TEXT(" Not Found Owning Pawn"))
 	}
+	else
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT(" found in pawn"))
+	}
+	
+	StartAI();
+
 }
 
 
@@ -28,8 +35,11 @@ void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+void AEnemyAIController::StartAI()
+{
+		
 	PlayerCharacterReference = Cast<APawn>(UGameplayStatics::GetPlayerPawn(this, 0));
-	
 	NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	
 	if (PlayerCharacterReference && OwningPawn && NavSystem)
@@ -41,8 +51,20 @@ void AEnemyAIController::BeginPlay()
 			0.5f,
 			true);
 	}
-	
+	else if (PlayerCharacterReference == nullptr)
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT("PlayerCharacterReference is missing"))
+	}
+	else if (OwningPawn == nullptr)
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT(" OwningPawn is missing"))
+	}
+	else if (NavSystem == nullptr)
+	{
+		UE_LOG(EnemyAILOG,Warning,TEXT(" NavSystem is missing"))
+	}
 }
+
 FVector AEnemyAIController::GetPlayerLocation()
 {
 	if (!PlayerCharacterReference)
@@ -54,6 +76,7 @@ FVector AEnemyAIController::GetPlayerLocation()
 	FVector PlayerLocation = PlayerCharacterReference->GetActorLocation();
 	return PlayerLocation;
 }
+
 
 void AEnemyAIController::MoveEnemyToPlayer()
 {

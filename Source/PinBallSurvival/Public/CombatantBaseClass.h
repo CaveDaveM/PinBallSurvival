@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/HealthInterface.h"
 #include "CombatantBaseClass.generated.h"
 
 class ABasicProjectile;
 class USphereComponent;
 
 UCLASS()
-class PINBALLSURVIVAL_API ACombatantBaseClass : public APawn
+class PINBALLSURVIVAL_API ACombatantBaseClass : public APawn, public IHealthInterface
 {
 	GENERATED_BODY()
 
@@ -43,9 +44,9 @@ protected:
 		OtherComp, 
 		int32 OtherBodyIndex);
 	
-	
-	UFUNCTION()
 	void FireWeapon();
+	void UpdatePlayerHealth();
+	
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABasicProjectile> ProjectileWeapons;
@@ -54,4 +55,10 @@ protected:
 	TArray<AActor*> ProximityEnemyArray;
 	
 	FTimerHandle FireWeapon_TimerHandle;
+	
+	UPROPERTY()
+	float BaseDamage = 40;
+	
+	UPROPERTY()
+	float TotalDamage = 0;
 };

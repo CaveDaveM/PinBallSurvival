@@ -38,11 +38,12 @@ protected:
 	/** At this stage i cant figure out how to get the extends of the box and transform them into coordinates.
 	 * I will use a Hard Set approach for now **/
 	
-	UFUNCTION()
 	TArray<FVector> FindSpawnOffsets(float radius);
-	
-	UFUNCTION()
 	void DebugTestLocations();
+	void StartWave();
+	void StartWaveSelection();
+	void SpawnEnemies();
+	void EndWave();
 	
 	UPROPERTY()
 	APawn* PlayerReference;
@@ -58,10 +59,18 @@ protected:
 	
 	UPROPERTY()
 	FEnemySpawnExampleTable EnemySpawnExampleTable;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Wave Params")
-	FWaveSpawnParams WaveSpawnTable;
+	UDataTable* WaveSpawnTable;
+	
+	const FWaveSpawnParams* CurrentWaveData;
 	
 	FTimerHandle WaveSpawner_TimeHandler;
-
+	
+	int16 CurrentWaveInt = 0;
+	int32 EnemyCount = 0;
+	bool bSpawningComplete = false;
+	FString RowName = "Wave_";
+	TArray<FVector> EnemySpawnOffsets;
+	
+	FName GetCurrentWaveName() const {return FName(*(RowName + FString::FromInt(CurrentWaveInt)));}
 };

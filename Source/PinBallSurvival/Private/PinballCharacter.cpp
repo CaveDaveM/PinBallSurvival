@@ -4,6 +4,8 @@
 #include "PinballCharacter.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
+#include "EPinCollisionChannel.h"
+#include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -17,6 +19,8 @@ APinballCharacter::APinballCharacter()
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("PlayerMesh"));
 	RootComponent = PlayerMesh;
 	PlayerMesh->SetSimulatePhysics(true);
+	PlayerMesh->SetCollisionObjectType(ECC_PLAYER);
+	PlayerMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
 	
 	Camera = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
 	Camera->SetupAttachment(RootComponent);
@@ -61,7 +65,7 @@ void APinballCharacter::BeginPlay()
 		UpdateCurrentSpeed_TimeHandle,
 		this,
 		&APinballCharacter::UpdateCurrentSpeed,
-		0.2,
+		3,
 		true);
 	
 }
@@ -71,11 +75,16 @@ void APinballCharacter::BeginPlay()
 void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
-	float MovementSpeed = MovementVectors.Size();
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
-		//FString::Printf(TEXT("MyValue: %f"), MovementSpeed));
+	CurrentSpeed = MovementVectors.Size();
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
+		FString::Printf(TEXT("MyValue: %f"), CurrentSpeed));
+	CalculateDamage();
 }
 
+void APinballCharacter::CalculateDamage()
+{
+	TotalDamage = BaseDamage + (CurrentSpeed * DamageScaling);
+}
 
 
 void APinballCharacter::MoveInput(const FInputActionValue& Value)
@@ -120,8 +129,4 @@ void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Move Input Component invalid"));
 	}
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////TEMP STUFF WHILE I FIX
-//
 

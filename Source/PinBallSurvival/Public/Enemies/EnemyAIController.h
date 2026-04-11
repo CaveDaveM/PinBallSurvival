@@ -24,13 +24,9 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	
-	UFUNCTION()
+	void StartAI();
 	void MoveEnemyToPlayer();
-	
 	virtual void OnPossess(APawn* InPawn) override;
-	
-	UFUNCTION()
 	FVector GetPlayerLocation();
 
 	UPROPERTY(EditDefaultsOnly)

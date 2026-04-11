@@ -13,9 +13,10 @@
 class AMyPawn;
 
 USTRUCT()
-struct FWaveSection
+struct FWaveSpawnParams : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY();
+
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AMyPawn> Enemy;
@@ -23,14 +24,10 @@ struct FWaveSection
 	UPROPERTY(EditAnywhere)
 	int16 Amount = 1;
 	
-};
-
-USTRUCT()
-struct FWaveSpawnParams : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY();
-
-	UPROPERTY(EditAnywhere, Category = "WaveData")
-	TArray<FWaveSection> Sections;
+	UPROPERTY(EditAnywhere)
+	float SpawnDelay = 0.01f;
+	
+	UPROPERTY(EditAnywhere)
+	float SectionSpawnDelay = 10.0f;
 	
 };

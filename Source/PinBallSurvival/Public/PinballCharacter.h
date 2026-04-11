@@ -54,9 +54,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(FVector2D MoveVector);
 	
-	UFUNCTION()
 	void UpdateCurrentSpeed();
-	
+	void CalculateDamage();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<UInputMappingContext> FirstPersonContext;
@@ -69,5 +68,8 @@ protected:
 	FTimerHandle UpdateCurrentSpeed_TimeHandle;
 	
 	UPROPERTY()
-	FVector CurrentSpeed;
+	float CurrentSpeed;
+	
+	UPROPERTY()
+	float DamageScaling = 0.1;
 };

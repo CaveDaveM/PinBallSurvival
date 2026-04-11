@@ -12,7 +12,7 @@
 ABasicProjectile::ABasicProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	//setting all the basics
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
 	SetRootComponent(ProjectileMesh);
@@ -21,9 +21,9 @@ ABasicProjectile::ABasicProjectile()
 	OverlapComponent->SetupAttachment(RootComponent);
 	OverlapComponent->SetGenerateOverlapEvents(true);
 	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	OverlapComponent->SetCollisionObjectType(EPinCollisionChannel::ECC_Bullet);
-	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
-	OverlapComponent->SetCollisionResponseToChannel(EPinCollisionChannel::ECC_Enemy, ECR_Overlap);
+	OverlapComponent->SetCollisionObjectType(ECC_BULLET);
+	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	OverlapComponent->SetCollisionResponseToChannel(ECC_ENEMY, ECR_Overlap);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	ProjectileMovement->InitialSpeed = 3000.f;
@@ -44,17 +44,20 @@ void ABasicProjectile::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(
 		Despawn_TimerHandle,
 		this, &ABasicProjectile::DespawnProjectile, DespawnDelay);
+	
+	
 }
 
 void ABasicProjectile::OnOverlaBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f,FColor::Cyan,TEXT("ENEMY HIT"));
-	if (OtherActor->GetClass()->ImplementsInterface(UEnemyInterface::StaticClass()))
+	if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 	{
-		if (IEnemyInterface* EnemyInterface = Cast<IEnemyInterface>(OtherActor))
+		if (IHealthInterface* EnemyInterface = Cast<IHealthInterface>(OtherActor))
 		{
 			EnemyInterface->ApplyDamage(ProjectileDamage);
+			NumberOfActorsHit++;
+			CheckPiercingPower();
 		}
 	}
 }
@@ -62,14 +65,23 @@ void ABasicProjectile::OnOverlaBegin(UPrimitiveComponent* OverlappedComponent, A
 
 
 // Called every frame
-void ABasicProjectile::Tick(float DeltaTime)
+void ABasicProjectile::CheckPiercingPower()
 {
-	Super::Tick(DeltaTime);
-
+	if (NumberOfActorsHit == PiercingPower)
+	{
+		Destroy();
+	}
 }
 
 void ABasicProjectile::DespawnProjectile()
 {
 	Destroy();
 }
+
+void ABasicProjectile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
 
