@@ -47,8 +47,10 @@ void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 		if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 		{
 			ProximityEnemyArray.Add(OtherActor);
+			#if 0			
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
 			FString::Printf(TEXT("Number Of Enemies: %d"), ProximityEnemyArray.Num()));
+			#endif
 		}
 	}
 }
@@ -95,6 +97,10 @@ void ACombatantBaseClass::FireWeapon()
 			Projectile->ProjectileDamage = TotalDamage;
 		}
 	}
+}
+
+void ACombatantBaseClass::UpdatePlayerHealth()
+{
 }
 
 

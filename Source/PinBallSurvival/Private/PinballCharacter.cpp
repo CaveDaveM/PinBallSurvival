@@ -75,7 +75,7 @@ void APinballCharacter::BeginPlay()
 void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
-	CurrentSpeed = MovementVectors.Size();
+	CurrentSpeed = MovementVectors.Size() * CurrantSpeedScalar;
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
 		FString::Printf(TEXT("MyValue: %f"), CurrentSpeed));
 	CalculateDamage();

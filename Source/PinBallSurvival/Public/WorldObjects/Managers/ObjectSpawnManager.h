@@ -7,6 +7,17 @@
 #include "GameFramework/Actor.h"
 #include "ObjectSpawnManager.generated.h"
 
+USTRUCT()
+struct FRarityWeights
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	EObjectRarity Rarity;
+	
+	UPROPERTY(EditAnywhere)
+	float Weight;
+};
 
 UCLASS()
 class PINBALLSURVIVAL_API AObjectSpawnManager : public AActor
@@ -24,9 +35,11 @@ public:
 protected:
 	// All Logic to make the weight based world object spawner
 	virtual void BeginPlay() override;
-	void SpawnWorldObjects();
-	void SortWorldObjects();
+	FVector3d FindSpawnLocation();
 	EObjectRarity FindRarity();
+	void FindWorldObjectsArray();
+	void SortWorldObjects();
+	void SpawnWorldObjects(TArray<FWorldObjectData>& WorldObjects);
 	
 	FTimerHandle SpawnWorldObjects_TimerHandle;
 	
@@ -37,9 +50,18 @@ protected:
 	UPROPERTY()
 	TArray<FWorldObjectData> UniqueObjects;
 	
+	//RarityFloatWeights
+	TArray<FRarityWeights> RarityTable = {
+		{EObjectRarity::Common,60.0f},
+		{EObjectRarity::Rare,30.0f},
+		{EObjectRarity::Unique,10.0f},
+	};
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
+	//RarityFloatWeights
+	void SetNewRarityTable(const TArray<FRarityWeights>& NewRarityTable);
+	
 };

@@ -45,6 +45,7 @@ protected:
 		int32 OtherBodyIndex);
 	
 	void FireWeapon();
+	
 	void UpdatePlayerHealth();
 	
 	

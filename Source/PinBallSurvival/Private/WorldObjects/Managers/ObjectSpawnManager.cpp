@@ -3,14 +3,21 @@
 
 #include "WorldObjects/Managers/ObjectSpawnManager.h"
 
+#include "WorldObjects/BaseWorldObject.h"
+
 // Sets default values
 AObjectSpawnManager::AObjectSpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
-
+//Setters and getters
+void AObjectSpawnManager::SetNewRarityTable(const TArray<FRarityWeights>& NewRarityTable)
+{
+	RarityTable.Empty();
+	RarityTable = NewRarityTable;
+}
 // Called when the game starts or when spawned
 void AObjectSpawnManager::BeginPlay()
 {
@@ -20,7 +27,7 @@ void AObjectSpawnManager::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(
 		SpawnWorldObjects_TimerHandle,
 		this,
-		&AObjectSpawnManager::SpawnWorldObjects,
+		&AObjectSpawnManager::FindWorldObjectsArray,
 		10.0f,
 		true);
 }
@@ -54,19 +61,93 @@ void AObjectSpawnManager::SortWorldObjects()
 	}
 }
 
+
 EObjectRarity AObjectSpawnManager::FindRarity()
 {
+	// using a weighted table to ensure rarity when spawning world objects, 
+	// got from https://copyprogramming.com/howto/how-to-make-a-function-that-gets-me-3-diferent-ramdom-numbers
+	float TotalWeight = 0.0f;
+	for (FRarityWeights WorldObject : RarityTable)
+	{
+		TotalWeight += WorldObject.Weight;
+	}
+	
+	float RandomWeight = FMath::FRandRange(0.f, TotalWeight);
+
+	// moves through the rarity to see where the rarity lands.
+	float CumulatedWeight = 0.0f;
+	for (FRarityWeights WorldObject : RarityTable)
+	{
+		CumulatedWeight += WorldObject.Weight;
+		if (RandomWeight <= CumulatedWeight)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, *UEnum::GetValueAsString(WorldObject.Rarity));
+			return WorldObject.Rarity;
+		}
+	}
+	return RarityTable[1].Rarity;
 }
 
-void AObjectSpawnManager::SpawnWorldObjects()
+void AObjectSpawnManager::FindWorldObjectsArray()
 {
+	EObjectRarity Rarity = FindRarity();
+	switch (Rarity)
+	{
+	case EObjectRarity::Common:
+		{
+			SpawnWorldObjects(CommonObjects);
+			break;
+		}
+	case EObjectRarity::Rare:
+		{
+			SpawnWorldObjects(RareObjects);
+			break;
+		}
+	case EObjectRarity::Unique:
+		{
+			SpawnWorldObjects(UniqueObjects);
+			break;
+		}
+	default: ;
+	}
 }
 
+FVector3d AObjectSpawnManager::FindSpawnLocation()
+{
+	//Change this to bounds of a cube for easy adjustments
+	const float RandomXCord = FMath::FRandRange(-9000.0f, 8000);
+	const float RandomYCord = FMath::FRandRange(-21000.0f, 6000.0f);
+	const FVector3d WorldPosition = FVector3d(RandomXCord, RandomYCord, 90.0f);
+	
+	return WorldPosition;
+}
+void AObjectSpawnManager::SpawnWorldObjects(TArray<FWorldObjectData>& WorldObjects)
+{
+	if (WorldObjects.IsEmpty()) return;
+	
+	int32 RandomObject = FMath::RandRange(0, WorldObjects.Num() - 1);
+	
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+	FVector SpawnLocation = FindSpawnLocation();
+	FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, SpawnLocation);
+	
+	ABaseWorldObject* SpawnedObject = GetWorld()->SpawnActor<ABaseWorldObject>(
+		WorldObjects[RandomObject].BaseWorldObject,
+		SpawnTransform,
+		SpawnParameters);
+	if (SpawnedObject)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("World Object Spawned at %s"), *SpawnLocation.ToString()));
+	}
 
+}
 // Called every frame
 void AObjectSpawnManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+
 

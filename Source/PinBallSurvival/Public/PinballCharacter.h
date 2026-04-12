@@ -42,7 +42,10 @@ public:
 	
 	UFUNCTION()
 	void ApplyForceToPlayer(FVector ForceToApply);
-
+	
+	float GetPlayerSpeed() const {return CurrantSpeedScalar;}
+	float GetMaxHealth() const {return MaxHealth;}
+	float GetDamage() const {return BaseDamage;}
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,12 +67,11 @@ protected:
 	TObjectPtr<UInputAction> MoveAction;
 	
 	//Updating The Current Speed of the player
-	UPROPERTY()
 	FTimerHandle UpdateCurrentSpeed_TimeHandle;
-	
-	UPROPERTY()
 	float CurrentSpeed;
+	float DamageScaling = 0.1f;
 	
-	UPROPERTY()
-	float DamageScaling = 0.1;
+	float MaxHealth= 100.0f;
+	float CurrentHealth = 100.0f;
+	float CurrantSpeedScalar = 0.01f;
 };
