@@ -37,30 +37,24 @@ int32 UPlayerProgressionSubsystem::CalculateNextLevelXPRequirement()
 	return NextLevelRequirement;
 }
 
-FUpgradeData UPlayerProgressionSubsystem::GetUpgradeValues(FUpgradeData DecidedUpgrade)
+void UPlayerProgressionSubsystem::SetUpgradeValues(EUpgrades DecidedUpgrade)
 {
-	switch (DecidedUpgrade.UpgradeType) {
+	switch (DecidedUpgrade) {
 	case MoveSpeed:
 		{
-			DecidedUpgrade.CurrentLevel++;
-			DecidedUpgrade.DisplayName = "Move Speed";
-			DecidedUpgrade.UpgradeAmount += 15.0f;
+			PlayerStats.MoveSpeedScalar += 0.01f;
 			break;
 		}
 	case ProjectileDamage:
 		{
-			DecidedUpgrade.CurrentLevel++;
-			DecidedUpgrade.DisplayName = "Projectile Damage";
-			DecidedUpgrade.UpgradeAmount += 10.0f;
+			PlayerStats.ProjectileDamage += 15.0f;
 			break;
 		}
 	case MaxHealth:
 		{
-			DecidedUpgrade.CurrentLevel++;
-			DecidedUpgrade.DisplayName = "Max Health";
-			DecidedUpgrade.UpgradeAmount += 50.0f;
+			PlayerStats.MaxHealth += 50.0f;
 			break;
 		}
 	}
-	return DecidedUpgrade;
+	OnPlayerStats.Broadcast(PlayerStats);
 }

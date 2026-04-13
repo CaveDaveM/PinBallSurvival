@@ -57,6 +57,22 @@ void APinballCharacter::BeginPlay()
 			Subsystem->AddMappingContext(FirstPersonContext, 0);
 		}
 	}
+	
+	UGameInstance* GI = GetGameInstance();
+	if (GI)
+	{
+		PlayerProgression = GI->GetSubsystem<UPlayerProgressionSubsystem>();
+		if (PlayerProgression)
+		{
+			PlayerProgression->OnPlayerStats.AddDynamic(this, &APinballCharacter::UpdatePlayerStats);
+			PlayerStats = PlayerProgression->GetPlayerStats();
+			UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));
+		}
+		else
+		{
+			UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in StaticWindow.cpp"));
+		}
+	}
 
 	// Display a debug message for five seconds. 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using AdventureCharacter."));
@@ -70,12 +86,17 @@ void APinballCharacter::BeginPlay()
 	
 }
 
+void APinballCharacter::UpdatePlayerStats(const FPlayerStats NewPlayerStats)
+{
+	PlayerStats = NewPlayerStats;
+}
+
 //MOVEMENT LOGIC
 
 void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
-	CurrentSpeed = MovementVectors.Size() * CurrantSpeedScalar;
+	CurrentSpeed = MovementVectors.Size();
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
 		FString::Printf(TEXT("MyValue: %f"), CurrentSpeed));
 	CalculateDamage();
@@ -83,7 +104,7 @@ void APinballCharacter::UpdateCurrentSpeed()
 
 void APinballCharacter::CalculateDamage()
 {
-	TotalDamage = BaseDamage + (CurrentSpeed * DamageScaling);
+	TotalDamage = PlayerStats.ProjectileDamage + (CurrentSpeed * DamageScaling);
 }
 
 
@@ -99,8 +120,8 @@ void APinballCharacter::MoveInput(const FInputActionValue& Value)
 void APinballCharacter::DoMove(FVector2D MoveVector)
 {
 	FVector Vectors;
-	Vectors.X = MoveVector.X * 100;
-	Vectors.Y = MoveVector.Y * 100;
+	Vectors.X = (MoveVector.X * 50) * PlayerStats.MoveSpeedScalar;
+	Vectors.Y = (MoveVector.Y * 50) * PlayerStats.MoveSpeedScalar;
 	Vectors.Z = 0.0f;
 	PlayerMesh->AddImpulse(Vectors);
 }

@@ -41,12 +41,13 @@ struct FPlayerStats
 {
 	GENERATED_BODY()
 	
-	float MoveSpeedScalar = 0.01f;
+	float MoveSpeedScalar = 1.01f;
 	float ProjectileDamage = 1.0f;
 	float MaxHealth = 100.0f;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelUp, int32, NewLevel, FPlayerStats, PlayerStats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUp, int32, NewLevel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStats, FPlayerStats, PlayerStats);
 
 UCLASS()
 class PINBALLSURVIVAL_API UPlayerProgressionSubsystem : public UGameInstanceSubsystem
@@ -60,14 +61,16 @@ public:
 	UPROPERTY()
 	FOnLevelUp OnLevelUp;
 	FPlayerStats PlayerStats;
+	FOnPlayerStats OnPlayerStats;
 	
 	void AddXP(int32 Amount);
 	int32 GetCurrentLevel() const { return CurrentLevel; }
 	int32 GetCurrentXP() const { return CurrentXP; }
 	int32 CalculateXPForNextLevel() const {return RequiredXP - CurrentXP;}
 	int32 CalculateNextLevelXPRequirement();
+	FPlayerStats GetPlayerStats() const { return PlayerStats; }
 	
-	FUpgradeData GetUpgradeValues(FUpgradeData DecidedUpgrade);
+	void SetUpgradeValues(EUpgrades DecidedUpgrade);
 
 private:
 	int32 CurrentLevel = 1;

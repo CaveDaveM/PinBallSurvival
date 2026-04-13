@@ -17,6 +17,7 @@ void UStaticWindow::NativeOnInitialized()
 		if (PlayerProgression)
 		{
 			UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));
+			PlayerProgression->OnPlayerStats.AddDynamic(this, &UStaticWindow::OnPlayerStatsChange);
 		}
 		else
 		{
@@ -48,31 +49,53 @@ void UStaticWindow::NativeConstruct()
 
 }
 
+void UStaticWindow::OnPlayerStatsChange(FPlayerStats NewPlayerStats)
+{
+	PlayerStats = NewPlayerStats;
+	UpdatePlayerStatistics();
+}
+
 void UStaticWindow::UpdatePlayerStatistics()
 {
 	CurrentLevel->SetText(FText::Format(FText::FromString("Player Level {0}: {1}/{2}"),
-	PlayerLevel,
-	PlayerProgression->CalculateNextLevelXPRequirement(),
-	PlayerProgression->GetCurrentXP()));
+		PlayerLevel,
+		PlayerProgression->CalculateNextLevelXPRequirement(),
+		PlayerProgression->GetCurrentXP()));
 	
 	XPDisplay->SetText(FText::Format(FText::FromString("XP : {0}/{1}"),
-	PlayerProgression->CalculateNextLevelXPRequirement(),
-	PlayerProgression->GetCurrentXP()));
+		PlayerProgression->CalculateNextLevelXPRequirement(),
+		PlayerProgression->GetCurrentXP()));
 	
 	MaxHealth->SetText(FText::Format(FText::FromString("MAX HP : {0}"),
+		PlayerStats.MaxHealth));
 		
 }
 
 void UStaticWindow::ChoiceHealth()
 {
+	if (AvailableLevelUps > 0)
+	{
+		PlayerProgression->SetUpgradeValues(EUpgrades::MaxHealth);
+	}
+	AvailableLevelUps -= 1;
 }
 
 void UStaticWindow::ChoiceSpeed()
 {
+	if (AvailableLevelUps > 0)
+	{
+		PlayerProgression->SetUpgradeValues(EUpgrades::MoveSpeed);
+	}
+	AvailableLevelUps -= 1;
 }
 
 void UStaticWindow::ChoiceDamage()
 {
+	if (AvailableLevelUps > 0)
+	{
+		PlayerProgression->SetUpgradeValues(EUpgrades::ProjectileDamage);
+	}
+	AvailableLevelUps -= 1;
 }
 // makes sure that if the player levels up more than once, he still gets to keep the old level
 void UStaticWindow::ApplyLevelUp(int32 NewLevel)

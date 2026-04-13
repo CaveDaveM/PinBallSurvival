@@ -51,6 +51,8 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
+	UFUNCTION()
+	void OnPlayerStatsChange(FPlayerStats NewPlayerStats);
 	
 	UFUNCTION()
 	void UpdatePlayerStatistics();
@@ -65,4 +67,6 @@ protected:
 	
 	int32 AvailableLevelUps = 0;
 	int32 PlayerLevel = 1;
+	
+	FPlayerStats PlayerStats;	
 };
