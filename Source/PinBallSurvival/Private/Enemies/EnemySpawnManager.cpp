@@ -12,7 +12,7 @@
 AEnemySpawnManager::AEnemySpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	EnemySpawnBounds = CreateDefaultSubobject<UBoxComponent>("EnemySpawnBounds");
 	EnemySpawnBounds->SetBoundsScale(40.0f);
@@ -28,23 +28,37 @@ void AEnemySpawnManager::BeginPlay()
 	
 	PlayerReference = UGameplayStatics::GetPlayerPawn(this, 0);
 	
-		if (PlayerReference)
-    	{
-    		UE_LOG(LogTemp, Display, TEXT("WaveManager, Cast to PlayerCharacter, Success"));
-    	}
-    	else
-    	{
-    		UE_LOG(LogTemp, Error, TEXT("WaveManager, Cast to PlayerCharacter, Failure"));
-    	}
-    	if (WaveSpawnTable)
-    	{
-    		UE_LOG(LogTemp, Display, TEXT("WaveSpawnTable already exist"));
-    		StartWave();
-    	}
-    	else
-    	{
-    		UE_LOG(LogTemp, Error, TEXT("WaveSpawnTable is NULL"));
-    	}
+	if (PlayerReference)
+    {
+    	UE_LOG(LogTemp, Display, TEXT("WaveManager, Cast to PlayerCharacter, Success"));
+    }
+    else
+    {
+    	UE_LOG(LogTemp, Error, TEXT("WaveManager, Cast to PlayerCharacter, Failure"));
+    }
+    if (WaveSpawnTable)
+    {
+    	UE_LOG(LogTemp, Display, TEXT("WaveSpawnTable already exist"));
+    	StartWave();
+    }
+    else
+    {
+    	UE_LOG(LogTemp, Error, TEXT("WaveSpawnTable is NULL"));
+    }
+	
+	UGameInstance* GI = GetGameInstance();
+	if (GI)
+	{
+		PlayerProgression = GI->GetSubsystem<UPlayerProgressionSubsystem>();
+		if (PlayerProgression)
+		{
+		}
+		else
+		{
+			UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in EnemySpawnManager.CPP"));
+		}
+	}
+	
 
 	
 	
@@ -106,7 +120,7 @@ void AEnemySpawnManager::StartWaveSelection()
 {
 	EnemyCount = 0;
 	bSpawningComplete = false;
-	EnemySpawnOffsets = FindSpawnOffsets(500.0f); 
+	EnemySpawnOffsets = FindSpawnOffsets(1000.0f); 
 	GetWorld()->GetTimerManager().SetTimer(
 		WaveSpawner_TimeHandler,
 		this,
@@ -133,12 +147,10 @@ void AEnemySpawnManager::SpawnEnemies()
 		SpawnRotation,
 		SpawnParams);
 	
-	
-	
-	//DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 12, FColor::Red, true, 250.0f);
 	if (Enemy)
 	{
 		Enemy->SpawnDefaultController();
+		Enemy->OnDestroyed.AddDynamic(this, &AEnemySpawnManager::OnEnemyKilled);
 	}
 
 	EnemyCount++;
@@ -167,7 +179,14 @@ void AEnemySpawnManager::EndWave()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Waves Ended"));
 		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Game Ended"));
+		GetWorld()->GetTimerManager().ClearTimer(WaveSpawner_TimeHandler);
 	}
+}
+
+void AEnemySpawnManager::OnEnemyKilled(AActor* Enemy)
+{
+	Enemy->OnDestroyed.RemoveDynamic(this, &AEnemySpawnManager::OnEnemyKilled);
+	PlayerProgression->AddXP(1);
 }
 
 // Called every frame

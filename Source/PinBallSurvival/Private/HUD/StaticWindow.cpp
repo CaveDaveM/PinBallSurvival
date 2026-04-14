@@ -18,6 +18,7 @@ void UStaticWindow::NativeOnInitialized()
 		{
 			UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));
 			PlayerProgression->OnPlayerStats.AddDynamic(this, &UStaticWindow::OnPlayerStatsChange);
+			UpdatePlayerStatistics();
 		}
 		else
 		{
@@ -57,10 +58,8 @@ void UStaticWindow::OnPlayerStatsChange(FPlayerStats NewPlayerStats)
 
 void UStaticWindow::UpdatePlayerStatistics()
 {
-	CurrentLevel->SetText(FText::Format(FText::FromString("Player Level {0}: {1}/{2}"),
-		PlayerLevel,
-		PlayerProgression->CalculateNextLevelXPRequirement(),
-		PlayerProgression->GetCurrentXP()));
+	CurrentLevel->SetText(FText::Format(FText::FromString("Player Level {0}"),
+		PlayerLevel));
 	
 	XPDisplay->SetText(FText::Format(FText::FromString("XP : {0}/{1}"),
 		PlayerProgression->CalculateNextLevelXPRequirement(),
@@ -68,7 +67,23 @@ void UStaticWindow::UpdatePlayerStatistics()
 	
 	MaxHealth->SetText(FText::Format(FText::FromString("MAX HP : {0}"),
 		PlayerStats.MaxHealth));
+	
+	ProjectileDamage->SetText(FText::Format(FText::FromString("PROJECTILE DAMAGE : {0}"),
+	PlayerStats.ProjectileDamage));
+	
+	Speed->SetText(FText::Format(FText::FromString("PLAYER SPEED : {0}"),
+	PlayerStats.MoveSpeedScalar));
 		
+	if (AvailableLevelUps > 0)
+	{
+		AvailableLevelUpText->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		AvailableLevelUpText->SetVisibility(ESlateVisibility::Hidden);
+	}
+	AvailableLevelUpText->SetText(FText::Format(FText::FromString("Available Level Up : {0}"),
+		AvailableLevelUps));
 }
 
 void UStaticWindow::ChoiceHealth()
@@ -76,8 +91,8 @@ void UStaticWindow::ChoiceHealth()
 	if (AvailableLevelUps > 0)
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::MaxHealth);
+		AvailableLevelUps -= 1;
 	}
-	AvailableLevelUps -= 1;
 }
 
 void UStaticWindow::ChoiceSpeed()
@@ -85,8 +100,8 @@ void UStaticWindow::ChoiceSpeed()
 	if (AvailableLevelUps > 0)
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::MoveSpeed);
+		AvailableLevelUps -= 1;
 	}
-	AvailableLevelUps -= 1;
 }
 
 void UStaticWindow::ChoiceDamage()
@@ -94,12 +109,18 @@ void UStaticWindow::ChoiceDamage()
 	if (AvailableLevelUps > 0)
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::ProjectileDamage);
+		AvailableLevelUps -= 1;
 	}
-	AvailableLevelUps -= 1;
 }
+
+
 // makes sure that if the player levels up more than once, he still gets to keep the old level
 void UStaticWindow::ApplyLevelUp(int32 NewLevel)
 {
-	AvailableLevelUps++;
+	if (NewLevel > PlayerLevel)
+	{
+		AvailableLevelUps++;
+		PlayerLevel = NewLevel;
+	}
 	UpdatePlayerStatistics();
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EnemySpawnStructure.h"
+#include "PlayerProgressionSubsystem.h"
 #include "GameFramework/Actor.h"
 #include "Engine/TimerHandle.h"
 #include "EnemySpawnManager.generated.h"
@@ -35,6 +36,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	UPROPERTY()
+	UPlayerProgressionSubsystem* PlayerProgression;
+	
 	/** At this stage i cant figure out how to get the extends of the box and transform them into coordinates.
 	 * I will use a Hard Set approach for now **/
 	
@@ -44,6 +48,8 @@ protected:
 	void StartWaveSelection();
 	void SpawnEnemies();
 	void EndWave();
+	UFUNCTION()
+	void OnEnemyKilled(AActor* Enemy);
 	
 	UPROPERTY()
 	APawn* PlayerReference;

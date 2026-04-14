@@ -6,9 +6,6 @@
 void UPlayerProgressionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	PlayerStats.MaxHealth = 100.0f;
-	PlayerStats.MoveSpeedScalar = 0.01f;
-	PlayerStats.ProjectileDamage = 15.0f;
 }
 
 void UPlayerProgressionSubsystem::Deinitialize()
@@ -20,13 +17,13 @@ void UPlayerProgressionSubsystem::Deinitialize()
 void UPlayerProgressionSubsystem::AddXP(int32 Amount)
 {
 	CurrentXP += Amount;
-	while (CurrentXP >= RequiredXP )
+	if (CurrentXP >= RequiredXP )
 	{
 		CurrentLevel++;
 		CurrentXP = CurrentXP - RequiredXP;
 		RequiredXP = CalculateNextLevelXPRequirement();
-		OnLevelUp.Broadcast(CurrentLevel);
 	}
+	OnLevelUp.Broadcast(CurrentLevel);
 }
 
 int32 UPlayerProgressionSubsystem::CalculateNextLevelXPRequirement()

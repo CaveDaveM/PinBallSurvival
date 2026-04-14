@@ -8,6 +8,8 @@
 #include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModeClasses/PlayerHUD.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APinballCharacter::APinballCharacter()
@@ -41,13 +43,12 @@ void APinballCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 }
+
 void APinballCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	// Called when the game starts or when spawned
-
-	check(GEngine != nullptr);
-
+	
+	HUD = Cast<APlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());	
 	// Get the player controller for this character
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -126,13 +127,30 @@ void APinballCharacter::DoMove(FVector2D MoveVector)
 	PlayerMesh->AddImpulse(Vectors);
 }
 
+
 void APinballCharacter::ApplyForceToPlayer(FVector ForceToApply)
 {
 	PlayerMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	PlayerMesh->AddImpulse(ForceToApply);
 }
-
-
+//HUD
+void APinballCharacter::OpenGameMenu()
+{
+	HUD->ToggleInGameMenu();
+}
+//PlayerHealing
+void APinballCharacter::ApplyHealing(float HealAmount)
+{
+	Super::ApplyHealing(HealAmount);
+	if (Health + HealAmount > PlayerStats.MaxHealth)
+	{
+		Health = PlayerStats.MaxHealth;
+	}
+	else
+	{
+		Health += HealAmount;
+	}
+}
 // Called to bind functionality to input
 void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -142,7 +160,7 @@ void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	{
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APinballCharacter::MoveInput);
-		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("valid"));
+		EnhancedInputComponent->BindAction(GameMenuAction, ETriggerEvent::Started, this , &APinballCharacter::OpenGameMenu);
 
 	}
 	else
@@ -150,4 +168,5 @@ void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Move Input Component invalid"));
 	}
 }
+
 

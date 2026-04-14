@@ -37,6 +37,9 @@ public:
 	UTextBlock* MaxHealth;
 	
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* AvailableLevelUpText;
+	
+	UPROPERTY(meta = (BindWidget))
 	UButton* UpgradeHealth;
 	
 	UPROPERTY(meta = (BindWidget))
