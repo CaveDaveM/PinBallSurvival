@@ -97,20 +97,29 @@ void ACombatantBaseClass::FireWeapon()
 		SpawnParams.Instigator = this;
 		
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		ABasicProjectile* Projectile = GetWorld()->SpawnActor<ABasicProjectile>(ProjectileWeapons,SpawnTransform,SpawnParams);
+		ABasicProjectile* Projectile = GetWorld()->SpawnActor<ABasicProjectile>(
+			ProjectileWeapons,
+			SpawnTransform,
+			SpawnParams);
 		if (Projectile)
 		{
 			Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
 			Projectile->ProjectileDamage = TotalDamage;
+			CurrentAmmo--;
+			ShotFired();
 		}
 	}
 }
 
 
+void ACombatantBaseClass::ShotFired()
+{
+}
 void ACombatantBaseClass::UpdatePlayerHealth()
 {
-	
+	//TODO: Cant remember what i was doing here
 }
+
 
 void ACombatantBaseClass::AddAmmo(const int32 Ammo)
 {

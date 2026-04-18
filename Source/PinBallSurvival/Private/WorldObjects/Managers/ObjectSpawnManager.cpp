@@ -86,7 +86,7 @@ EObjectRarity AObjectSpawnManager::FindRarity()
 	{
 		TotalWeight += WorldObject.Weight;
 	}
-	
+
 	float RandomWeight = FMath::FRandRange(0.f, TotalWeight);
 
 	// moves through the rarity to see where the rarity lands.
@@ -154,13 +154,23 @@ void AObjectSpawnManager::SpawnWorldObjects( const TArray<FWorldObjectData>& Wor
 		SpawnParameters);
 	if (SpawnedObject)
 	{
-		FWorldObjectData WorldObjectData;
-		WorldObjectData.BaseWorldObject = SpawnedObject;
-		WorldState->RegisterWorldObject();
+		SpawnedObject->OnDestroyed.AddDynamic(this, &AObjectSpawnManager::OnObjectCollected);
+		WorldState->RegisterWorldObject(SpawnedObject);
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("World Object Spawned at %s"), *SpawnLocation.ToString()));
 	}
 
 }
+
+void AObjectSpawnManager::OnObjectCollected(AActor* CollectedObjects)
+{
+	CollectedObjects->OnDestroyed.RemoveDynamic(this, &AObjectSpawnManager::OnObjectCollected);
+	ABaseWorldObject* CollectedObject = Cast<ABaseWorldObject>(CollectedObjects);
+	if (CollectedObject)
+	{
+		WorldState->UnregisterWorldObject(CollectedObject);
+	}
+}
+
 // Called every frame
 void AObjectSpawnManager::Tick(float DeltaTime)
 {

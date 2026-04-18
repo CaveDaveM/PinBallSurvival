@@ -48,6 +48,7 @@ protected:
 	
 	void FireWeapon();
 	void UpdatePlayerHealth();
+	virtual void ShotFired();
 
 public:
 	virtual void AddAmmo(int32 Ammo) override;
@@ -63,5 +64,5 @@ protected:
 	float TotalDamage = 0;
 	
 	int32 MaxAmmo = 120;
-	int32 CurrentAmmo = 30;
+	int32 CurrentAmmo = 5;
 };

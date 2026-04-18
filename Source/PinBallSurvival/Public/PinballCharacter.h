@@ -11,6 +11,10 @@
 #include "GameFramework/Pawn.h"
 #include "PinballCharacter.generated.h"
 
+class UProgressBar;
+class UAlwaysOnDisplay;
+class UWidgetComponent;
+class UTextBlock;
 class APlayerHUD;
 class ABasicProjectile;
 class UProjectileWeapons;
@@ -30,14 +34,20 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void ApplyHealing(float HealAmount) override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* PlayerMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* Camera;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* PlayerHUDWidget;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UAlwaysOnDisplay> AlwaysOnDisplayClass;
 	
 	UFUNCTION()
 	void ApplyForceToPlayer(FVector ForceToApply);
@@ -50,8 +60,11 @@ protected:
 	TObjectPtr<UInputAction> MoveAction;
 	UPROPERTY(EditAnywhere, Category ="Input")
 	TObjectPtr<UInputAction> GameMenuAction;
+	UPROPERTY() // keep a ref so GC doesn't eat it
+	UAlwaysOnDisplay* AlwaysOnDisplayHud = nullptr;
 	
 	virtual void BeginPlay() override;
+	void UpdateHudStats();
 	
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
@@ -72,7 +85,8 @@ protected:
 	void UpdatePlayerStats(FPlayerStats NewPlayerStats); 
 	void UpdateCurrentSpeed();
 	void CalculateDamage();
-	
+	virtual void ShotFired() override;
+
 	FTimerHandle UpdateCurrentSpeed_TimeHandle;
 	float CurrentSpeed;
 	float DamageScaling = 0.1f;

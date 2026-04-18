@@ -7,8 +7,10 @@
 #include "EPinCollisionChannel.h"
 #include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameModeClasses/PlayerHUD.h"
+#include "HUD/AlwaysOnDisplay.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -33,7 +35,13 @@ APinballCharacter::APinballCharacter()
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
 	
 	PawnDetectionSphere->SetupAttachment(RootComponent);
-	
+
+	PlayerHUDWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHUDWidget"));
+	PlayerHUDWidget->SetupAttachment(PlayerMesh);
+	PlayerHUDWidget->SetWidgetSpace(EWidgetSpace::World);
+	PlayerHUDWidget->SetDrawSize(FVector2D(200.f, 80.f));
+	PlayerHUDWidget->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+	PlayerHUDWidget->SetTwoSided(true);
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +55,7 @@ void APinballCharacter::Tick(float DeltaTime)
 void APinballCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//the general hud.
 	HUD = Cast<APlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());	
 	// Get the player controller for this character
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -58,7 +66,7 @@ void APinballCharacter::BeginPlay()
 			Subsystem->AddMappingContext(FirstPersonContext, 0);
 		}
 	}
-	
+	// player progression subsystem that tracks the players upgrades
 	UGameInstance* GI = GetGameInstance();
 	if (GI)
 	{
@@ -74,9 +82,18 @@ void APinballCharacter::BeginPlay()
 			UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in StaticWindow.cpp"));
 		}
 	}
+	//Players Always on Display that moves around with the player
+	if (AlwaysOnDisplayClass && PlayerHUDWidget)
+	{
+		PlayerHUDWidget->SetWidgetClass(AlwaysOnDisplayClass);
+		PlayerHUDWidget->InitWidget();
+		AlwaysOnDisplayHud = Cast<UAlwaysOnDisplay>(PlayerHUDWidget->GetUserWidgetObject());
+	}
+	UpdateHudStats();
 
 	// Display a debug message for five seconds. 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using AdventureCharacter."));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, 
+		TEXT("We are using AdventureCharacter."));
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		UpdateCurrentSpeed_TimeHandle,
@@ -87,6 +104,21 @@ void APinballCharacter::BeginPlay()
 	
 }
 
+void APinballCharacter::UpdateHudStats()
+{
+	if (AlwaysOnDisplayHud)
+	{
+		AlwaysOnDisplayHud->UpdateHealthBar(Health, PlayerStats.MaxHealth);
+		AlwaysOnDisplayHud->UpdateAmmoText(CurrentAmmo,MaxAmmo);	
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,TEXT("UpdatingPlayerHud"));
+	}
+}
+
+void APinballCharacter::ShotFired()
+{
+	Super::ShotFired();
+	UpdateHudStats();
+}
 void APinballCharacter::UpdatePlayerStats(const FPlayerStats NewPlayerStats)
 {
 	PlayerStats = NewPlayerStats;
@@ -107,6 +139,7 @@ void APinballCharacter::CalculateDamage()
 {
 	TotalDamage = PlayerStats.ProjectileDamage + (CurrentSpeed * DamageScaling);
 }
+
 
 
 void APinballCharacter::MoveInput(const FInputActionValue& Value)

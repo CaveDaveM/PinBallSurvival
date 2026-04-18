@@ -17,3 +17,9 @@ void UWorldStateSubsystem::RegisterWorldObject(ABaseWorldObject* SpawnedObject)
 {
 	RegisteredWorldObjects.Add(SpawnedObject);
 }
+
+void UWorldStateSubsystem::UnregisterWorldObject(ABaseWorldObject* SpawnedObject)
+{
+	RegisteredWorldObjects.Remove(SpawnedObject);
+}
+

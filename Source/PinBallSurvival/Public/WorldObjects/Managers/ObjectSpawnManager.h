@@ -41,9 +41,11 @@ protected:
 	void FindWorldObjectsArray();
 	void SortWorldObjects();
 	void SpawnWorldObjects(const TArray<FWorldObjectData>& WorldObjects);
+	UFUNCTION()
+	void OnObjectCollected(AActor* CollectedObjects);
+	
 	UPROPERTY()
 	UWorldStateSubsystem* WorldState;
-	
 	FTimerHandle SpawnWorldObjects_TimerHandle;
 	
 	UPROPERTY()

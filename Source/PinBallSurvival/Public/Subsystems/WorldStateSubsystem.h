@@ -20,9 +20,12 @@ public:
 	virtual void Deinitialize() override;
 	
 	void RegisterWorldObject(ABaseWorldObject* SpawnedObject);
+	void UnregisterWorldObject(ABaseWorldObject* SpawnedObject);
 	TArray<ABaseWorldObject*> GetRegisteredWorldObjects() const {return RegisteredWorldObjects;}
+	
 	
 private:
 	UPROPERTY()
 	TArray<ABaseWorldObject*> RegisteredWorldObjects;
+	
 };
