@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Interfaces/HealthInterface.h"
+#include "Interfaces/WeaponInterface.h"
 #include "CombatantBaseClass.generated.h"
 
 class ABasicProjectile;
 class USphereComponent;
 
 UCLASS()
-class PINBALLSURVIVAL_API ACombatantBaseClass : public APawn, public IHealthInterface
+class PINBALLSURVIVAL_API ACombatantBaseClass : public APawn, public IHealthInterface, public IWeaponInterface
 {
 	GENERATED_BODY()
 
@@ -44,22 +45,23 @@ protected:
 		OtherComp, 
 		int32 OtherBodyIndex);
 	
+	
 	void FireWeapon();
-	
 	void UpdatePlayerHealth();
-	
-	
+
+public:
+	virtual void AddAmmo(int32 Ammo) override;
+
+protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABasicProjectile> ProjectileWeapons;
-
+	
 	UPROPERTY()
 	TArray<AActor*> ProximityEnemyArray;
-	
 	FTimerHandle FireWeapon_TimerHandle;
-	
-	UPROPERTY()
 	float BaseDamage = 40;
-	
-	UPROPERTY()
 	float TotalDamage = 0;
+	
+	int32 MaxAmmo = 120;
+	int32 CurrentAmmo = 30;
 };

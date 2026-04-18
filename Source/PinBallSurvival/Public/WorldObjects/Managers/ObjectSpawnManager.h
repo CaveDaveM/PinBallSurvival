@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "WorldObjectData.h"
 #include "GameFramework/Actor.h"
+#include "Subsystems/WorldStateSubsystem.h"
 #include "ObjectSpawnManager.generated.h"
 
 USTRUCT()
@@ -39,7 +40,9 @@ protected:
 	EObjectRarity FindRarity();
 	void FindWorldObjectsArray();
 	void SortWorldObjects();
-	void SpawnWorldObjects(TArray<FWorldObjectData>& WorldObjects);
+	void SpawnWorldObjects(const TArray<FWorldObjectData>& WorldObjects);
+	UPROPERTY()
+	UWorldStateSubsystem* WorldState;
 	
 	FTimerHandle SpawnWorldObjects_TimerHandle;
 	

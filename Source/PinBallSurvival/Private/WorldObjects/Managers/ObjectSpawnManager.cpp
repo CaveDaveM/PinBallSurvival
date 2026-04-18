@@ -3,6 +3,7 @@
 
 #include "WorldObjects/Managers/ObjectSpawnManager.h"
 
+#include "Subsystems/WorldStateSubsystem.h"
 #include "WorldObjects/BaseWorldObject.h"
 
 // Sets default values
@@ -23,6 +24,20 @@ void AObjectSpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 	SortWorldObjects();
+	
+	UGameInstance* GI = GetGameInstance();
+	if (GI)
+	{
+		WorldState = GI->GetSubsystem<UWorldStateSubsystem>();
+		if (WorldState)
+		{
+			UE_LOG(LogLevel, Log, TEXT("WorldState, object manager"));
+		}
+		else
+		{
+			UE_LOG(LogLevel, Warning, TEXT("Couldnt Find WorldState, Object Manager"));
+		}
+	}
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		SpawnWorldObjects_TimerHandle,
@@ -121,7 +136,7 @@ FVector3d AObjectSpawnManager::FindSpawnLocation()
 	
 	return WorldPosition;
 }
-void AObjectSpawnManager::SpawnWorldObjects(TArray<FWorldObjectData>& WorldObjects)
+void AObjectSpawnManager::SpawnWorldObjects( const TArray<FWorldObjectData>& WorldObjects)
 {
 	if (WorldObjects.IsEmpty()) return;
 	
@@ -139,6 +154,9 @@ void AObjectSpawnManager::SpawnWorldObjects(TArray<FWorldObjectData>& WorldObjec
 		SpawnParameters);
 	if (SpawnedObject)
 	{
+		FWorldObjectData WorldObjectData;
+		WorldObjectData.BaseWorldObject = SpawnedObject;
+		WorldState->RegisterWorldObject();
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("World Object Spawned at %s"), *SpawnLocation.ToString()));
 	}
 

@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "GoapTypes.generated.h"
+#include "GOAPTypes.generated.h"
 
 /** Comments in the goap system will be both comments about what the code is doing and my overall thought process
  *	Explanations about the code will be marked with a //
@@ -40,12 +40,12 @@ struct FGOAPWorldState
 		return NewState;
 	}
 	//heuristic is the cost of how many steps remains to the goal
-	int32 Heuristic(const FGOAPWorldState& Goal)
+	int32 HeuristicCost(const FGOAPWorldState& Goal) const
 	{
 		int32 HeuristicValue = 0;
 		for (const TPair<FName, bool>& GoalFacts : Goal.WorldFacts)
 		{
-			bool* CurrentValue = WorldFacts.Find(GoalFacts.Key);
+			const bool* CurrentValue = WorldFacts.Find(GoalFacts.Key);
 			if (CurrentValue == nullptr || *CurrentValue != GoalFacts.Value)
 			{
 				HeuristicValue++;
@@ -53,4 +53,5 @@ struct FGOAPWorldState
 		}
 		return HeuristicValue;
 	}
+	
 };

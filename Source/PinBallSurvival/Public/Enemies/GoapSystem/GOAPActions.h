@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GoapTypes.h"
+#include "GOAPTypes.h"
 #include "GOAPActions.Generated.h"
 
 USTRUCT()

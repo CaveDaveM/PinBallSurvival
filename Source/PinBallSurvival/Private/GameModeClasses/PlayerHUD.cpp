@@ -5,6 +5,7 @@
 
 #include "HUD/InteractionWidget.h"
 #include "HUD/StaticWindow.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -27,6 +28,7 @@ void APlayerHUD::ToggleInGameMenu()
 	if(bIsMenuVisible)
 	{
 		HideInGameMenu();
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),1.0);
 		const FInputModeGameOnly InputMode;
 		GetOwningPlayerController()-> SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(false);
@@ -34,6 +36,8 @@ void APlayerHUD::ToggleInGameMenu()
 	else
 	{
 		DisplayInGameMenu();
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),0.1);
+		UGameplayStatics::SetGamePaused(GetWorld(),true);
 		const FInputModeGameAndUI InputMode;
 		GetOwningPlayerController()-> SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
