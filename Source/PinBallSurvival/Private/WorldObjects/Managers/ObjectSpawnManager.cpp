@@ -154,9 +154,9 @@ void AObjectSpawnManager::SpawnWorldObjects( const TArray<FWorldObjectData>& Wor
 		SpawnParameters);
 	if (SpawnedObject)
 	{
+		SpawnedObject->ObjectType = WorldObjects[RandomObject].ObjectType;
 		SpawnedObject->OnDestroyed.AddDynamic(this, &AObjectSpawnManager::OnObjectCollected);
 		WorldState->RegisterWorldObject(SpawnedObject);
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("World Object Spawned at %s"), *SpawnLocation.ToString()));
 	}
 
 }

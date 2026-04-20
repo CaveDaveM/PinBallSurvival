@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/WeaponInterface.h"
 #include "WorldObjects/BaseWorldObject.h"
 #include "AmmoPack.generated.h"
 
@@ -10,7 +11,7 @@
  * 
  */
 UCLASS()
-class PINBALLSURVIVAL_API AAmmoPack : public ABaseWorldObject
+class PINBALLSURVIVAL_API AAmmoPack : public ABaseWorldObject, public IWeaponInterface
 {
 	GENERATED_BODY()
 	

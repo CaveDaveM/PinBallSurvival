@@ -21,10 +21,6 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(EnemyAILOG,Warning,TEXT(" Not Found Owning Pawn"))
 	}
-	else
-	{
-		UE_LOG(EnemyAILOG,Warning,TEXT(" found in pawn"))
-	}
 	
 	StartAI();
 

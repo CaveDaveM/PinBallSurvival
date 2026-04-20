@@ -3,6 +3,9 @@
 
 #include "Subsystems/WorldStateSubsystem.h"
 
+#include "Interfaces/HealthInterface.h"
+#include "Interfaces/WeaponInterface.h"
+
 void UWorldStateSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -15,11 +18,33 @@ void UWorldStateSubsystem::Deinitialize()
 
 void UWorldStateSubsystem::RegisterWorldObject(ABaseWorldObject* SpawnedObject)
 {
-	RegisteredWorldObjects.Add(SpawnedObject);
+	switch (SpawnedObject->ObjectType) 
+	{
+		case EObjectType::HealingObject:
+			{
+				RegisteredHealingObjects.Add(SpawnedObject);
+				break;
+			}
+		case EObjectType::AmmoObject:
+			{
+				RegisteredAmmoObjects.Add(SpawnedObject);
+				break;
+			}
+		case EObjectType::PlayerUpgrades:
+			{
+				RegisteredUpgradeObjects.Add(SpawnedObject);
+				break;
+			}
+		default:
+			{
+				UE_LOG(LogTemp, Error, TEXT("SpawnedObject Registered incorrectly"));
+			}
+	}
+	
 }
 
 void UWorldStateSubsystem::UnregisterWorldObject(ABaseWorldObject* SpawnedObject)
 {
-	RegisteredWorldObjects.Remove(SpawnedObject);
+	RegisteredHealingObjects.Remove(SpawnedObject);
 }
 

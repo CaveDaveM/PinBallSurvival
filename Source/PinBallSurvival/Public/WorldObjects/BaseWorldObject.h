@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Managers/WorldObjectData.h"
 #include "BaseWorldObject.generated.h"
 
 class USphereComponent;
+
 
 UCLASS()
 class PINBALLSURVIVAL_API ABaseWorldObject : public AActor
@@ -23,7 +25,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* CollisionComponent;
 	
-
+	EObjectType ObjectType;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

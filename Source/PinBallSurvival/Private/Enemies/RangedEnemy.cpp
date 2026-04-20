@@ -9,6 +9,7 @@
 
 ARangedEnemy::ARangedEnemy()
 {
+	
 }
 
 void ARangedEnemy::BeginPlay()
@@ -27,16 +28,24 @@ void ARangedEnemy::BeginPlay()
 	}
 }
 
-void ARangedEnemy::GetAmmo()
+void ARangedEnemy::AddAmmo(const int32 Ammo)
 {
-	
+	IWeaponInterface::AddAmmo(Ammo);
+	int32 PredictedAmmo = CurrentAmmo + Ammo;
+	if (PredictedAmmo >= MaxAmmo)
+	{
+		CurrentAmmo = MaxAmmo;
+	}
+	else
+	{
+		CurrentAmmo = PredictedAmmo;
+	}
 }
-
 
 void ARangedEnemy::ShootWeapon()
 {
 	float Distance = GetDistanceTo(PlayerCharacterReference);
-	if (Distance <= TargetDistance && Ammo != 0)
+	if (Distance <= TargetDistance && CurrentAmmo != 0)
 	{
 		FVector TargetLocation = PlayerCharacterReference->GetActorLocation();
 		FVector CurrentLocation = GetActorLocation();
@@ -52,8 +61,9 @@ void ARangedEnemy::ShootWeapon()
 		if (Projectile)
 		{
 			Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
+			CurrentAmmo--;
 		}
 		
-		Ammo--;
 	}
 }
+

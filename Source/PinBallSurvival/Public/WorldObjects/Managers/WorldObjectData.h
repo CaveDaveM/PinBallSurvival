@@ -17,6 +17,14 @@ enum class EObjectRarity : uint8
 	
 };
 
+UENUM()
+enum class EObjectType : uint8
+{
+	HealingObject UMETA(DisplayName = "Healing"),
+	AmmoObject UMETA(DisplayName = "Ammo"),
+	PlayerUpgrades UMETA(DisplayName = "Player Upgrade"),
+};
+
 USTRUCT()
 struct FWorldObjectData 
 {
@@ -27,6 +35,9 @@ struct FWorldObjectData
 	
 	UPROPERTY(EditAnywhere)
 	EObjectRarity Rarity;
+	
+	UPROPERTY(EditAnywhere)
+	EObjectType ObjectType;
 	
 };
 

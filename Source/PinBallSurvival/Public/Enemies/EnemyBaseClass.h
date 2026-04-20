@@ -24,6 +24,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Mesh")
 	UStaticMeshComponent* StaticMeshComponent;
 
+	UPROPERTY()
+	float Health = 100;
 
 public:	
 	// Called every frame

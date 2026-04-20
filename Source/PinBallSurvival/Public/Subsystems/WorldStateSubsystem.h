@@ -21,11 +21,16 @@ public:
 	
 	void RegisterWorldObject(ABaseWorldObject* SpawnedObject);
 	void UnregisterWorldObject(ABaseWorldObject* SpawnedObject);
-	TArray<ABaseWorldObject*> GetRegisteredWorldObjects() const {return RegisteredWorldObjects;}
+	TArray<ABaseWorldObject*> GetRegisteredWorldObjects() const {return RegisteredHealingObjects;}
 	
 	
 private:
 	UPROPERTY()
-	TArray<ABaseWorldObject*> RegisteredWorldObjects;
+	TArray<ABaseWorldObject*> RegisteredHealingObjects;
 	
+	UPROPERTY()
+	TArray<ABaseWorldObject*> RegisteredAmmoObjects;
+	
+	UPROPERTY()
+	TArray<ABaseWorldObject*> RegisteredUpgradeObjects;
 };

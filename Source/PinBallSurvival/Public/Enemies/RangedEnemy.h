@@ -19,12 +19,18 @@ class PINBALLSURVIVAL_API ARangedEnemy : public AEnemyBaseClass, public IWeaponI
 	
 public:
 	ARangedEnemy();
-	void GetAmmo();
+	int GetAmmo() const {return CurrentAmmo;}
+	float GetRange() const {return TargetDistance;}
+	float GetHealth() const {return Health;}
+	
 protected:
+	virtual void AddAmmo(const int32 Ammo) override;
 	virtual void BeginPlay() override;
 	void ShootWeapon();
 	
-	int32 Ammo = 12;
+	float Health = 15.0f;
+	int32 CurrentAmmo = 12;
+	int32 MaxAmmo = 12;
 	float TargetDistance = 500.0f;
 	
 	UPROPERTY(EditDefaultsOnly)
