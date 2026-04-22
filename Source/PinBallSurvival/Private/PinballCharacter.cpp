@@ -24,7 +24,9 @@ APinballCharacter::APinballCharacter()
 	RootComponent = PlayerMesh;
 	PlayerMesh->SetSimulatePhysics(true);
 	PlayerMesh->SetCollisionObjectType(ECC_PLAYER);
-	PlayerMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+	PlayerMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	PlayerMesh->SetCollisionResponseToChannel(ECC_INTERACTABLE,ECR_Overlap);
+	PlayerMesh->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
 	
 	Camera = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
 	Camera->SetupAttachment(RootComponent);
@@ -163,8 +165,10 @@ void APinballCharacter::DoMove(FVector2D MoveVector)
 
 void APinballCharacter::ApplyForceToPlayer(FVector ForceToApply)
 {
+	//i think this works
+	float PlayerSpeed = PlayerMesh->GetComponentVelocity().Size();
 	PlayerMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	PlayerMesh->AddImpulse(ForceToApply);
+	PlayerMesh->AddImpulse(ForceToApply + PlayerSpeed);
 }
 //HUD
 void APinballCharacter::OpenGameMenu()

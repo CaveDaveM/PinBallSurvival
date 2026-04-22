@@ -43,7 +43,7 @@ void AObjectSpawnManager::BeginPlay()
 		SpawnWorldObjects_TimerHandle,
 		this,
 		&AObjectSpawnManager::FindWorldObjectsArray,
-		10.0f,
+		1.0f,
 		true);
 }
 
@@ -130,9 +130,9 @@ void AObjectSpawnManager::FindWorldObjectsArray()
 FVector3d AObjectSpawnManager::FindSpawnLocation()
 {
 	//Change this to bounds of a cube for easy adjustments
-	const float RandomXCord = FMath::FRandRange(-9000.0f, 8000);
-	const float RandomYCord = FMath::FRandRange(-21000.0f, 6000.0f);
-	const FVector3d WorldPosition = FVector3d(RandomXCord, RandomYCord, 90.0f);
+	const float RandomXCord = FMath::FRandRange(-5400.0f, 10600);
+	const float RandomYCord = FMath::FRandRange(-13750.0f, 10500.0f);
+	const FVector3d WorldPosition = FVector3d(RandomXCord, RandomYCord, 40.0f);
 	
 	return WorldPosition;
 }

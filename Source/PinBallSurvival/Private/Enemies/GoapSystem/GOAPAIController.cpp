@@ -21,9 +21,14 @@ void AGOAPAIController::OnPossess(APawn* InPawn)
 	
 	OwningPawn = Cast<ARangedEnemy>(InPawn);
 	PlayerCharacterReference = Cast<APinballCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	MakePlan();
+	StartAIAction();
 }
 
+
+void AGOAPAIController::StartAIAction()
+{
+	MakePlan();
+}
 
 void AGOAPAIController::MakePlan()
 {
@@ -45,6 +50,7 @@ void AGOAPAIController::MakePlan()
 	FGOAPWorldState GoalWorldState;
 	GoalWorldState.WorldFacts.Add(FName("PlayerDead"),true);
 	
+	//=== one problem is using fnames is the possibility of typos breaking the entire process
 	
 	TArray<FGOAPAction> PossibleActions;
 	
@@ -81,27 +87,40 @@ void AGOAPAIController::MakePlan()
 
     // === RUN THE PLANNER ===
 	UGOAPPlanner* Planner = NewObject<UGOAPPlanner>();
-    TArray<FName> Plan;
     if (bool bDidMakePlan = Planner->Plan(CurrentWorldState,GoalWorldState,PossibleActions,Plan))
     {
-	    UE_LOG(LogTemp, Log, TEXT("=== GOAP Plan Found ==="));
+	    UE_LOG(LogTemp, Log, TEXT(" GOAP Plan Found"));
     	for (int32 i = 0; i < Plan.Num(); i++)
     	{
     		UE_LOG(GOAPAILOG, Warning, TEXT("  Step %d: %s"), i + 1, *Plan[i].ToString());
     	}
-    	// Output will be:
-    	//   Step 1: PickUpWeapon   (cost 2)
-    	//   Step 2: MoveToTarget   (cost 3)
-    	//   Step 3: AttackEnemy    (cost 4)
-    	//   Total cost: 9
     }
 	else
 	{
 		UE_LOG(GOAPAILOG, Warning, TEXT("bDidMakePlan: %s"), bDidMakePlan ? TEXT("true") : TEXT("false"));
 	}
 	
+	SwitchState(0);
 }
 
-void AGOAPAIController::MovePawn(FVector NewLocation)
+void AGOAPAIController::SwitchState(int8 CaseNum)
 {
+	
 }
+
+void AGOAPAIController::PickupAmmo()
+{
+	
+}
+
+void AGOAPAIController::PickupHealth()
+{
+	
+}
+
+void AGOAPAIController::MovetoTarget()
+{
+	
+}
+
+

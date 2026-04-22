@@ -28,7 +28,7 @@ struct FGOAPWorldState
 			}
 		}
 		return true;// only retruns true if every single goal was true
-	}
+	} 
 	
 	FGOAPWorldState ApplyEffects(const TMap<FName, bool>& Effects)
 	{

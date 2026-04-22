@@ -16,6 +16,9 @@ AEnemyBaseClass::AEnemyBaseClass()
 	
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	SetRootComponent(StaticMeshComponent);
+	StaticMeshComponent->SetCollisionObjectType(ECC_INTERACTABLE);
+	StaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Block);
+	StaticMeshComponent->SetCollisionResponseToChannel(ECC_PLAYER, ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
