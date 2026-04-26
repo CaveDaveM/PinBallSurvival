@@ -5,6 +5,17 @@
 
 #include "Interfaces/HealthInterface.h"
 #include "Interfaces/WeaponInterface.h"
+#include "Kismet/GameplayStatics.h"
+
+void UWorldStateSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	
+	if (APinballGameState* PinballGS = InWorld.GetGameState<APinballGameState>())
+	{
+		PinballGS->OnStateChange.AddUObject(this, &UWorldStateSubsystem::SwitchOnGameStateChange);
+	}
+}
 
 void UWorldStateSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -15,6 +26,36 @@ void UWorldStateSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 }
+
+void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState)
+{
+	switch (ChangedState) {
+	case None:
+		{
+			break;
+		}
+	case StartPlay:
+		{
+			OnGameStart.Broadcast(StartPlay);
+
+			break;
+		}
+	case Playing:
+		{
+			GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Green,"WorldStateGame Playing");
+			OnGameStart.Broadcast(Playing);
+			OnGameInProgress.Broadcast(Playing);
+			break;
+		}
+	case Ended:
+		{
+			OnGameInProgress.Broadcast(Ended);
+			break;
+		}
+	}
+
+}
+
 
 void UWorldStateSubsystem::RegisterWorldObject(ABaseWorldObject* SpawnedObject)
 {

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameModeClasses/PinballGameState.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PlayerProgressionSubsystem.generated.h"
 
@@ -50,11 +51,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUp, int32, NewLevel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStats, FPlayerStats, PlayerStats);
 
 UCLASS()
-class PINBALLSURVIVAL_API UPlayerProgressionSubsystem : public UGameInstanceSubsystem
+class PINBALLSURVIVAL_API UPlayerProgressionSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
 public:
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	
@@ -62,6 +64,7 @@ public:
 	FOnLevelUp OnLevelUp;
 	FPlayerStats PlayerStats;
 	FOnPlayerStats OnPlayerStats;
+	FOnStateChange OnStateChange;
 	
 	void AddXP(int32 Amount);
 	int32 GetCurrentLevel() const { return CurrentLevel; }

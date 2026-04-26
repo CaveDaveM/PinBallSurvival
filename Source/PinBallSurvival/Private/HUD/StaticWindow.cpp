@@ -10,10 +10,12 @@
 void UStaticWindow::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	UGameInstance* GI = GetGameInstance();
-	if (GI)
+
+	// an check on this simply because i don't know if on initialized run before or after world generation.
+	//turns out it runs after, the more you know
+	if (UWorld* World = GetWorld())
 	{
-		PlayerProgression = GI->GetSubsystem<UPlayerProgressionSubsystem>();
+		PlayerProgression = World->GetSubsystem<UPlayerProgressionSubsystem>();
 		if (PlayerProgression)
 		{
 			UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));

@@ -48,6 +48,7 @@ void ABumper::PushAwayActor(APinballCharacter* OverlappedActor, FVector HitNorma
 	GEngine->AddOnScreenDebugMessage(-1,3.0f, FColor::Green,TEXT("Bumper Is Overlapping"));
 #endif
 	
+	/*
 	FVector OverlappedActorsVector = OverlappedActor->GetVelocity();
 	FVector ReflectionDirection = ReflectVector(OverlappedActorsVector,HitNormal,1.0f);
 	FVector ReflectionForce = ReflectionDirection * OverlappedActor->GetActorForwardVector() * 50.0f;
@@ -55,17 +56,34 @@ void ABumper::PushAwayActor(APinballCharacter* OverlappedActor, FVector HitNorma
 	FString::Printf(TEXT("Vector: %s"), *ReflectionForce.ToString()));
 	
 	OverlappedActor->ApplyForceToPlayer(ReflectionForce);
+	*/
+	
+	FVector BumperCentre = GetActorLocation();
+
+	FVector Normal = (HitNormal - BumperCentre).GetSafeNormal();
+	
+	FVector IncomingVelocity = OverlappedActor->GetVelocity();
+	float Dot = FVector::DotProduct(IncomingVelocity, Normal);
+	FVector ReflectedVelocity = IncomingVelocity - 2.f * Dot * Normal;
+	
+	if (ReflectedVelocity.Size() < MinBumpSpeed)
+	{
+		ReflectedVelocity = Normal * MinBumpSpeed;
+	}
+		
+	//OverlappedActor->ApplyForceToPlayer(ReflectedVelocity);
+	OverlappedActor->PlayerMesh->SetPhysicsLinearVelocity(ReflectedVelocity);
 	
 }
 
-FVector ABumper::ReflectVector(FVector Direction, FVector WallNormal, float Restitution)
+/*FVector ABumper::ReflectVector(FVector Direction, FVector WallNormal, float Restitution)
 {
 	// WallNormal must be normalised
 	//code from the unreal implementation, slightly adjusted
 	FVector SafeNormal(WallNormal.GetSafeNormal());
 
 	return Direction - (1.0f + Restitution) * (Direction | SafeNormal) * SafeNormal;
-}
+}*/
 
 // Called every frame
 void ABumper::Tick(float DeltaTime)

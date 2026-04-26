@@ -7,6 +7,7 @@
 #include "PlayerProgressionSubsystem.h"
 #include "GameFramework/Actor.h"
 #include "Engine/TimerHandle.h"
+#include "Subsystems/WorldStateSubsystem.h"
 #include "EnemySpawnManager.generated.h"
 
 class UBoxComponent;
@@ -32,25 +33,29 @@ public:
 	AEnemySpawnManager();
 	virtual void Tick(float DeltaTime) override;
 
-protected:
+private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void StartGame(EGamePhase GameState);
 	
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
+	UPROPERTY()
+	UWorldStateSubsystem* WorldState;
 	
 	/** At this stage i cant figure out how to get the extends of the box and transform them into coordinates.
 	 * I will use a Hard Set approach for now **/
 	
-	TArray<FVector> FindSpawnOffsets(float radius);
 	void DebugTestLocations();
 	void StartWave();
 	void StartWaveSelection();
 	void SpawnEnemies();
 	void EndWave();
+	void EndGame();
 	UFUNCTION()
 	void OnEnemyKilled(AActor* Enemy);
 	
+	TArray<FVector> FindSpawnOffsets(float radius);
 	UPROPERTY()
 	APawn* PlayerReference;
 	
@@ -65,6 +70,7 @@ protected:
 	
 	UPROPERTY()
 	FEnemySpawnExampleTable EnemySpawnExampleTable;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Wave Params")
 	UDataTable* WaveSpawnTable;
 	

@@ -25,26 +25,29 @@ void AObjectSpawnManager::BeginPlay()
 	Super::BeginPlay();
 	SortWorldObjects();
 	
-	UGameInstance* GI = GetGameInstance();
-	if (GI)
+	WorldState = GetWorld()->GetSubsystem<UWorldStateSubsystem>();
+	if (WorldState)
 	{
-		WorldState = GI->GetSubsystem<UWorldStateSubsystem>();
-		if (WorldState)
-		{
-			UE_LOG(LogLevel, Log, TEXT("WorldState, object manager"));
-		}
-		else
-		{
-			UE_LOG(LogLevel, Warning, TEXT("Couldnt Find WorldState, Object Manager"));
-		}
+		WorldState->OnGameInProgress.AddUObject(this, &AObjectSpawnManager::StartSpawingObjects);
+		UE_LOG(LogLevel, Log, TEXT("WorldState, object manager"));
 	}
-	
-	GetWorld()->GetTimerManager().SetTimer(
-		SpawnWorldObjects_TimerHandle,
-		this,
-		&AObjectSpawnManager::FindWorldObjectsArray,
-		1.0f,
-		true);
+	else
+	{
+		UE_LOG(LogLevel, Warning, TEXT("Couldnt Find WorldState, Object Manager"));
+	}
+}
+
+void AObjectSpawnManager::StartSpawingObjects(EGamePhase GameState)
+{
+	if (GameState == EGamePhase::Playing)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			SpawnWorldObjects_TimerHandle,
+			this,
+			&AObjectSpawnManager::FindWorldObjectsArray,
+			10.0f,
+			true);
+	}
 }
 
 void AObjectSpawnManager::SortWorldObjects()
@@ -155,6 +158,7 @@ void AObjectSpawnManager::SpawnWorldObjects( const TArray<FWorldObjectData>& Wor
 	if (SpawnedObject)
 	{
 		SpawnedObject->ObjectType = WorldObjects[RandomObject].ObjectType;
+		SpawnedObject->SetObjectRarity(WorldObjects[RandomObject].Rarity);
 		SpawnedObject->OnDestroyed.AddDynamic(this, &AObjectSpawnManager::OnObjectCollected);
 		WorldState->RegisterWorldObject(SpawnedObject);
 	}

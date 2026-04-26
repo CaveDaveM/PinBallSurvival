@@ -42,11 +42,17 @@ protected:
 	void PushAwayActor(APinballCharacter* OverlappedActor, FVector HitNormal);
 	
 	
-	UFUNCTION()
-	FVector ReflectVector(FVector Direction, FVector WallNormal, float Restitution);
+	//UFUNCTION()
+	//FVector ReflectVector(FVector Direction, FVector WallNormal, float Restitution);
 	
 	UPROPERTY(EditAnywhere)
 	float PushStrength = 10.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Bumper")
+	float Restitution = 1.2f;   
+
+	UPROPERTY(EditAnywhere, Category = "Bumper")
+	float MinBumpSpeed = 800.f; 
 	
 public:	
 	// Called every frame

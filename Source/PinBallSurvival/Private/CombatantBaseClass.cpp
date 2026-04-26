@@ -90,7 +90,9 @@ void ACombatantBaseClass::FireWeapon()
 		FVector TargetLocation = CurrentTarget->GetActorLocation();
 		FVector CurrentLocation = GetActorLocation();
 		//Spawn Projectile
-		FRotator ProjectileRotation = (TargetLocation - CurrentLocation).Rotation();
+		FVector ProjectileDirection = TargetLocation - CurrentLocation;
+		ProjectileDirection.Z = 0.0f;
+		FRotator ProjectileRotation = ProjectileDirection.Rotation();
 		FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
 		
 		FActorSpawnParameters SpawnParams;
@@ -121,6 +123,7 @@ void ACombatantBaseClass::UpdatePlayerHealth()
 }
 
 
+
 void ACombatantBaseClass::AddAmmo(const int32 Ammo)
 {
 	IWeaponInterface::AddAmmo(Ammo);
@@ -134,5 +137,10 @@ void ACombatantBaseClass::AddAmmo(const int32 Ammo)
 	{
 		CurrentAmmo = MaxAmmo;
 	}
+	UpdateHudStats();
+}
+
+void ACombatantBaseClass::UpdateHudStats()
+{
 }
 

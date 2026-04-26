@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h" 
 #include "PlayerProgressionSubsystem.h"
 #include "GameFramework/Pawn.h"
+#include "Subsystems/WorldStateSubsystem.h"
 #include "PinballCharacter.generated.h"
 
 class UProgressBar;
@@ -64,14 +65,18 @@ protected:
 	UAlwaysOnDisplay* AlwaysOnDisplayHud = nullptr;
 	
 	virtual void BeginPlay() override;
-	void UpdateHudStats();
 	
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
 	
 	UPROPERTY()
+	UWorldStateSubsystem* WorldState;
+	
+	UPROPERTY()
 	APlayerHUD* HUD;
 	
+	//Exit the tutorial area
+	void StartGame(EGamePhase GameState);
 	//movement and inputs
 	UFUNCTION(Category="Input")
 	void MoveInput(const FInputActionValue& Value);
@@ -83,6 +88,7 @@ protected:
 	//PlayerStats update
 	UFUNCTION()
 	void UpdatePlayerStats(FPlayerStats NewPlayerStats); 
+	virtual void UpdateHudStats() override;
 	void UpdateCurrentSpeed();
 	void CalculateDamage();
 	virtual void ShotFired() override;

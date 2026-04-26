@@ -6,6 +6,7 @@
 #include "EPinCollisionChannel.h"
 #include "Components/SphereComponent.h"
 
+
 // Sets default values
 ABaseWorldObject::ABaseWorldObject()
 {
@@ -35,6 +36,10 @@ void ABaseWorldObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
+}
+
+void ABaseWorldObject::SetObjectRarity(EObjectRarity Rarity)
+{
 }
 
 // Called every frame

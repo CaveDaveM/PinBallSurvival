@@ -69,6 +69,7 @@ void ABasicProjectile::CheckPiercingPower()
 {
 	if (NumberOfActorsHit == PiercingPower)
 	{
+		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"Checking piercing power");
 		Destroy();
 	}
 }

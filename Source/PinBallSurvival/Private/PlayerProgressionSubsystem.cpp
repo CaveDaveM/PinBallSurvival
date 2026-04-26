@@ -3,6 +3,11 @@
 
 #include "PlayerProgressionSubsystem.h"
 
+void UPlayerProgressionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+}
+
 void UPlayerProgressionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -12,7 +17,6 @@ void UPlayerProgressionSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
 }
-
 
 void UPlayerProgressionSubsystem::AddXP(int32 Amount)
 {

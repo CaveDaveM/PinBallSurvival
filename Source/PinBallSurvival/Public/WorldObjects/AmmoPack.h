@@ -11,8 +11,17 @@
  * 
  */
 UCLASS()
-class PINBALLSURVIVAL_API AAmmoPack : public ABaseWorldObject, public IWeaponInterface
+class PINBALLSURVIVAL_API AAmmoPack : public ABaseWorldObject
 {
 	GENERATED_BODY()
+	public:
+	AAmmoPack();
+	virtual void BeginPlay() override;
+
+protected:
+	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void SetObjectRarity(EObjectRarity Rarity) override;
 	
+	int32 AmmoPackAmount = 40;
 };

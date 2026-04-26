@@ -68,22 +68,25 @@ void APinballCharacter::BeginPlay()
 			Subsystem->AddMappingContext(FirstPersonContext, 0);
 		}
 	}
-	// player progression subsystem that tracks the players upgrades
-	UGameInstance* GI = GetGameInstance();
-	if (GI)
+	// player progression subsystem that tracks the players upgrades and world state system
+	PlayerProgression = GetWorld()->GetSubsystem<UPlayerProgressionSubsystem>();
+	if (PlayerProgression)
 	{
-		PlayerProgression = GI->GetSubsystem<UPlayerProgressionSubsystem>();
-		if (PlayerProgression)
-		{
-			PlayerProgression->OnPlayerStats.AddDynamic(this, &APinballCharacter::UpdatePlayerStats);
-			PlayerStats = PlayerProgression->GetPlayerStats();
-			UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));
-		}
-		else
-		{
-			UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in StaticWindow.cpp"));
-		}
+		PlayerProgression->OnPlayerStats.AddDynamic(this, &APinballCharacter::UpdatePlayerStats);
+		PlayerStats = PlayerProgression->GetPlayerStats();
+		UE_LOG(LogLevel, Log, TEXT("Player Progression Enabled"));
 	}
+	else
+	{
+		UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in StaticWindow.cpp"));
+	}
+	WorldState = GetWorld()->GetSubsystem<UWorldStateSubsystem>();
+	if (WorldState)
+	{
+		WorldState->OnGameInProgress.AddUObject(this, &APinballCharacter::StartGame);
+	}
+	
+	
 	//Players Always on Display that moves around with the player
 	if (AlwaysOnDisplayClass && PlayerHUDWidget)
 	{
@@ -101,20 +104,27 @@ void APinballCharacter::BeginPlay()
 		UpdateCurrentSpeed_TimeHandle,
 		this,
 		&APinballCharacter::UpdateCurrentSpeed,
-		3,
+		.2,
 		true);
 	
 }
-
-void APinballCharacter::UpdateHudStats()
+void APinballCharacter::StartGame(EGamePhase GameState)
 {
-	if (AlwaysOnDisplayHud)
+	if (GameState == EGamePhase::Playing)
 	{
-		AlwaysOnDisplayHud->UpdateHealthBar(Health, PlayerStats.MaxHealth);
-		AlwaysOnDisplayHud->UpdateAmmoText(CurrentAmmo,MaxAmmo);	
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,TEXT("UpdatingPlayerHud"));
+		FVector EndTutorialLocation = FVector(2568.0, -16135.0, 20.0 );
+		FRotator EndTutorialRotation = FRotator(0.0f, 0.0f, -180.0f);
+		SetActorLocationAndRotation(
+			EndTutorialLocation,
+			EndTutorialRotation,
+			false,
+			nullptr,
+			ETeleportType::ResetPhysics);
+		
 	}
 }
+
+
 
 void APinballCharacter::ShotFired()
 {
@@ -126,14 +136,22 @@ void APinballCharacter::UpdatePlayerStats(const FPlayerStats NewPlayerStats)
 	PlayerStats = NewPlayerStats;
 }
 
+void APinballCharacter::UpdateHudStats()
+{
+	Super::UpdateHudStats();
+	if (AlwaysOnDisplayHud)
+	{
+		AlwaysOnDisplayHud->UpdateHealthBar(Health, PlayerStats.MaxHealth);
+		AlwaysOnDisplayHud->UpdateAmmoText(CurrentAmmo,MaxAmmo);	
+	}
+}
+
 //MOVEMENT LOGIC
 
 void APinballCharacter::UpdateCurrentSpeed()
 {
 	FVector MovementVectors = GetVelocity();
 	CurrentSpeed = MovementVectors.Size();
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
-		FString::Printf(TEXT("MyValue: %f"), CurrentSpeed));
 	CalculateDamage();
 }
 
@@ -165,10 +183,7 @@ void APinballCharacter::DoMove(FVector2D MoveVector)
 
 void APinballCharacter::ApplyForceToPlayer(FVector ForceToApply)
 {
-	//i think this works
-	float PlayerSpeed = PlayerMesh->GetComponentVelocity().Size();
-	PlayerMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	PlayerMesh->AddImpulse(ForceToApply + PlayerSpeed);
+	PlayerMesh->SetPhysicsLinearVelocity(ForceToApply);
 }
 //HUD
 void APinballCharacter::OpenGameMenu()

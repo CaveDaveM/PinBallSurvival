@@ -62,10 +62,6 @@ void AMyPawn::CheckHealth()
 void AMyPawn::ApplyDamage(float DamageAmount)
 {
 	IHealthInterface::ApplyDamage(DamageAmount);
-	
 	Health -= DamageAmount;
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
-	FString::Printf(TEXT("MyValue: %f"), DamageAmount));
-	CheckHealth();
 }
 

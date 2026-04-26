@@ -33,9 +33,10 @@ public:
 	TArray<FWorldObjectData> WorldObjectData;
 	
 
-protected:
+private:
 	// All Logic to make the weight based world object spawner
 	virtual void BeginPlay() override;
+	void StartSpawingObjects(EGamePhase GameState);
 	FVector3d FindSpawnLocation();
 	EObjectRarity FindRarity();
 	void FindWorldObjectsArray();

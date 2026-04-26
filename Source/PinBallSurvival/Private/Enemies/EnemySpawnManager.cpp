@@ -39,28 +39,27 @@ void AEnemySpawnManager::BeginPlay()
     if (WaveSpawnTable)
     {
     	UE_LOG(LogTemp, Display, TEXT("WaveSpawnTable already exist"));
-    	StartWave();
     }
     else
     {
     	UE_LOG(LogTemp, Error, TEXT("WaveSpawnTable is NULL"));
     }
-	
-	UGameInstance* GI = GetGameInstance();
-	if (GI)
+	//Subscribers
+	PlayerProgression = GetWorld()->GetSubsystem<UPlayerProgressionSubsystem>();
+	if (!PlayerProgression)
 	{
-		PlayerProgression = GI->GetSubsystem<UPlayerProgressionSubsystem>();
-		if (PlayerProgression)
-		{
-		}
-		else
-		{
-			UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in EnemySpawnManager.CPP"));
-		}
+		UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in EnemySpawnManager.CPP"));
 	}
 	
-
-	
+	WorldState = GetWorld()->GetSubsystem<UWorldStateSubsystem>();
+	if (WorldState)
+	{
+		WorldState->OnGameInProgress.AddUObject(this, &AEnemySpawnManager::StartGame);
+	}
+	else
+	{
+		UE_LOG(LogLevel, Warning, TEXT("World State not found in EnemySpawnManager.CPP"));
+	}
 	
 	/*//TEST STRUCT
 	TArray<int32> TestEnemyArray;
@@ -71,8 +70,25 @@ void AEnemySpawnManager::BeginPlay()
 	EnemySpawnExampleTable.EnemiesToSpawn = TestEnemyArray;
 	
 	DebugTestLocations();*/
-	
-	StartWave();
+}
+
+void AEnemySpawnManager::StartGame(EGamePhase GameState)
+{
+	// might be a redundant check, but all the bugs ive seen, im not taking any chances
+	if (GameState == EGamePhase::Playing)
+	{
+		StartWave();
+	}
+}
+
+void AEnemySpawnManager::StartWave()
+{
+	CurrentWaveData = WaveSpawnTable->FindRow<FWaveSpawnParams>(GetCurrentWaveName(),"");
+	if (CurrentWaveData)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Wave Started"));
+		StartWaveSelection();
+	}
 }
 
 TArray<FVector> AEnemySpawnManager::FindSpawnOffsets(float radius)
@@ -106,15 +122,6 @@ void AEnemySpawnManager::DebugTestLocations()
 	}
 }
 
-void AEnemySpawnManager::StartWave()
-{
-	CurrentWaveData = WaveSpawnTable->FindRow<FWaveSpawnParams>(GetCurrentWaveName(),"");
-	if (CurrentWaveData)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Wave Started"));
-		StartWaveSelection();
-	}
-}
 
 void AEnemySpawnManager::StartWaveSelection()
 {
@@ -180,6 +187,20 @@ void AEnemySpawnManager::EndWave()
 		UE_LOG(LogTemp, Error, TEXT("Waves Ended"));
 		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Game Ended"));
 		GetWorld()->GetTimerManager().ClearTimer(WaveSpawner_TimeHandler);
+		GetWorld()->GetTimerManager().SetTimer(
+			WaveSpawner_TimeHandler,
+			this,
+			&AEnemySpawnManager::EndGame,
+			20.0f);
+	}
+}
+
+void AEnemySpawnManager::EndGame()
+{
+	APinballGameState* PinballGS = GetWorld()->GetGameState<APinballGameState>();
+	if (PinballGS)
+	{
+		PinballGS->SetGamePhase(EGamePhase::Ended);
 	}
 }
 

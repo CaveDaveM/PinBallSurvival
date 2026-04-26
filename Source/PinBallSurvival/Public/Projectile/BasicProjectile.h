@@ -46,7 +46,7 @@ public:
 	float ProjectileDamage = 40.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DespawnDelay = 5.0f;
+	float DespawnDelay = 10.0f;
 	
 	FTimerHandle Despawn_TimerHandle;
 	

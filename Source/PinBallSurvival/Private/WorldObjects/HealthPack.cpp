@@ -22,8 +22,6 @@ void AHealthPack::BeginPlay()
 	
 }
 
-
-
 // Called every frame
 void AHealthPack::Tick(float DeltaTime)
 {
@@ -36,12 +34,37 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 {
 	Super::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
+	
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
-	if (APinballCharacter* PlayerCharacter = Cast<APinballCharacter>(OtherActor))
+	if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green,TEXT("Healing"));
-		PlayerCharacter->ApplyHealing(HealAmount);
-		Destroy();
+		if (IHealthInterface* EnemyInterface = Cast<IHealthInterface>(OtherActor))
+		{
+			EnemyInterface->ApplyHealing(HealAmount);
+			Destroy();
+		}
+	}
+}
+
+void AHealthPack::SetObjectRarity(EObjectRarity Rarity)
+{
+	Super::SetObjectRarity(Rarity);
+	switch (Rarity) {
+	case EObjectRarity::Common:
+		{
+			HealAmount = 40;
+			break;
+		}
+	case EObjectRarity::Rare:
+		{
+			HealAmount = 80;
+			break;
+		}
+	case EObjectRarity::Unique:
+		{
+			HealAmount = 140;
+			break;
+		}
 	}
 }
 
