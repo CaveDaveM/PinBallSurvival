@@ -21,8 +21,9 @@ class ABasicProjectile;
 class UProjectileWeapons;
 class USphereComponent;
 class USpringArmComponent;
-struct FInputActionValue;
 class UInputAction;
+class UNiagaraSystem;
+struct FInputActionValue;
 
 UCLASS()
 class PINBALLSURVIVAL_API APinballCharacter : public ACombatantBaseClass
@@ -50,8 +51,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UAlwaysOnDisplay> AlwaysOnDisplayClass;
 	
+	UPROPERTY(EditAnywhere);
+	UNiagaraSystem* SpeedEffectClass;
+	
 	UFUNCTION()
 	void ApplyForceToPlayer(FVector ForceToApply);
+	
 
 protected:
 	
@@ -74,6 +79,10 @@ protected:
 	
 	UPROPERTY()
 	APlayerHUD* HUD;
+	
+	//Visual Effects
+	UPROPERTY()
+	UNiagaraComponent* SpeedEffect;
 	
 	//Exit the tutorial area
 	void StartGame(EGamePhase GameState);

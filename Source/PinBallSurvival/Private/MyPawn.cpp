@@ -63,5 +63,6 @@ void AMyPawn::ApplyDamage(float DamageAmount)
 {
 	IHealthInterface::ApplyDamage(DamageAmount);
 	Health -= DamageAmount;
+	CheckHealth();
 }
 

@@ -8,6 +8,8 @@
 #include "Subsystems/WorldStateSubsystem.h"
 #include "ObjectSpawnManager.generated.h"
 
+class UNiagaraSystem;
+
 USTRUCT()
 struct FRarityWeights
 {
@@ -62,6 +64,9 @@ private:
 		{EObjectRarity::Rare,30.0f},
 		{EObjectRarity::Unique,10.0f},
 	};
+	
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	UNiagaraSystem* SpawnIndication;
 
 public:	
 	// Called every frame

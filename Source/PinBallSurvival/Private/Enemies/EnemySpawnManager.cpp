@@ -7,6 +7,8 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AEnemySpawnManager::AEnemySpawnManager()
@@ -207,6 +209,10 @@ void AEnemySpawnManager::EndGame()
 void AEnemySpawnManager::OnEnemyKilled(AActor* Enemy)
 {
 	Enemy->OnDestroyed.RemoveDynamic(this, &AEnemySpawnManager::OnEnemyKilled);
+	UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		DeathEffects,
+		Enemy->GetActorLocation());
 	PlayerProgression->AddXP(1);
 }
 

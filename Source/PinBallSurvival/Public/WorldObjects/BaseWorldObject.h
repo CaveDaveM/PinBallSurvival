@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include <UIAutomationCore.h>
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Managers/WorldObjectData.h"
 #include "BaseWorldObject.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class USphereComponent;
 
 
@@ -28,6 +32,10 @@ public:
 	EObjectType ObjectType;
 	
 	virtual void SetObjectRarity(EObjectRarity Rarity);
+	//VisualEffects
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	UNiagaraSystem* SpawnIndicationClass;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,6 +43,9 @@ protected:
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult);
+	//VisualEffects
+	UPROPERTY(EditAnywhere)
+	UNiagaraComponent* SpawnIndication;
 	
 public:	
 	// Called every frame

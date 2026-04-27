@@ -5,6 +5,8 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EPinCollisionChannel.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -95,6 +97,20 @@ void APinballCharacter::BeginPlay()
 		AlwaysOnDisplayHud = Cast<UAlwaysOnDisplay>(PlayerHUDWidget->GetUserWidgetObject());
 	}
 	UpdateHudStats();
+	
+	//Load Visual Effects
+	if (SpeedEffectClass)
+	{
+		SpeedEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			SpeedEffectClass,
+			PlayerMesh,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,
+			false,
+			false);
+	}
 
 	// Display a debug message for five seconds. 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, 
@@ -153,6 +169,24 @@ void APinballCharacter::UpdateCurrentSpeed()
 	FVector MovementVectors = GetVelocity();
 	CurrentSpeed = MovementVectors.Size();
 	CalculateDamage();
+	if (SpeedEffect && CurrentSpeed > 1000.0f && CurrentSpeed < 1999.0f)
+	{
+		SpeedEffect->Activate();
+		SpeedEffect->SetVariableLinearColor(
+		TEXT("User.Color"),
+		FLinearColor(1.0f,0.0f,0.0f,1.0f));
+	}
+	else if (SpeedEffect && CurrentSpeed > 2000.0f )
+	{
+		SpeedEffect->Activate();
+		SpeedEffect->SetVariableLinearColor(
+			TEXT("User.Color"),
+			FLinearColor(0.0f,0.0f,1.0f,1.0f));
+	}
+	else if (SpeedEffect && CurrentSpeed < 1000.0f && SpeedEffect->IsActive())
+	{
+		SpeedEffect->Deactivate();
+	}
 }
 
 void APinballCharacter::CalculateDamage()
@@ -202,6 +236,7 @@ void APinballCharacter::ApplyHealing(float HealAmount)
 	{
 		Health += HealAmount;
 	}
+	UpdateHudStats();
 }
 // Called to bind functionality to input
 void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

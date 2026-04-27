@@ -11,6 +11,7 @@
 #include "EnemySpawnManager.generated.h"
 
 class UBoxComponent;
+class UNiagaraSystem;
 
 USTRUCT()
 struct FEnemySpawnExampleTable
@@ -67,6 +68,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Bounds")
 	TObjectPtr<UBoxComponent> EnemySpawnBounds;
+	
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	UNiagaraSystem* DeathEffects;
 	
 	UPROPERTY()
 	FEnemySpawnExampleTable EnemySpawnExampleTable;

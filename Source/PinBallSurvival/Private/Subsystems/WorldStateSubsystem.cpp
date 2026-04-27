@@ -37,7 +37,6 @@ void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState)
 	case StartPlay:
 		{
 			OnGameStart.Broadcast(StartPlay);
-
 			break;
 		}
 	case Playing:
@@ -49,7 +48,7 @@ void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState)
 		}
 	case Ended:
 		{
-			OnGameInProgress.Broadcast(Ended);
+			OnGameEnded.Broadcast(Ended);
 			break;
 		}
 	}

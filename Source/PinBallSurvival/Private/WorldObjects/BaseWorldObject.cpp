@@ -4,6 +4,8 @@
 #include "WorldObjects/BaseWorldObject.h"
 
 #include "EPinCollisionChannel.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 
 
@@ -30,6 +32,42 @@ void ABaseWorldObject::BeginPlay()
 {
 	Super::BeginPlay();
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABaseWorldObject::OnOverlapBegin);
+	
+	SpawnIndication = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		SpawnIndicationClass,
+		GetActorLocation(),
+		FRotator::ZeroRotator,
+		FVector(1.5f, 1.5f, 1.0f));
+	if (SpawnIndication)
+	{
+		switch (ObjectType)
+		{
+		case EObjectType::HealingObject:
+			{
+				SpawnIndication->SetVariableLinearColor(
+				TEXT("User.Color"),
+				FLinearColor(0.0f,1.0f,0.0f,1.0f));
+				break;
+			}
+		case EObjectType::AmmoObject:
+			{
+				SpawnIndication->SetVariableLinearColor(
+				TEXT("User.Color"),
+				FLinearColor(1.0f,0.0f,0.0f,1.0f));
+				break;
+			}
+		case EObjectType::PlayerUpgrades:
+			{
+				SpawnIndication->SetVariableLinearColor(
+				TEXT("User.Color"),
+				FLinearColor(1.0f,1.0f,0.0f,1.0f));
+				break;
+			}
+		default: ;
+		}
+	}
+	
 }
 
 void ABaseWorldObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

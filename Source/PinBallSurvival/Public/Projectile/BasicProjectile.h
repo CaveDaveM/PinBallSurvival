@@ -59,6 +59,6 @@ public:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	FORCEINLINE void SetProjectileDamage(const float SetDamage){ProjectileDamage = SetDamage;}
+	void SetProjectileDamage(const float SetDamage){ProjectileDamage = SetDamage;}
 
 };

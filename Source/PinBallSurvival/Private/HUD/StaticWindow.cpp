@@ -82,7 +82,7 @@ void UStaticWindow::UpdatePlayerStatistics()
 	}
 	else
 	{
-		AvailableLevelUpText->SetVisibility(ESlateVisibility::Hidden);
+		AvailableLevelUpText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	AvailableLevelUpText->SetText(FText::Format(FText::FromString("Available Level Up : {0}"),
 		AvailableLevelUps));
@@ -94,6 +94,7 @@ void UStaticWindow::ChoiceHealth()
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::MaxHealth);
 		AvailableLevelUps -= 1;
+		UpdatePlayerStatistics();
 	}
 }
 
@@ -103,6 +104,7 @@ void UStaticWindow::ChoiceSpeed()
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::MoveSpeed);
 		AvailableLevelUps -= 1;
+		UpdatePlayerStatistics();
 	}
 }
 
@@ -112,6 +114,7 @@ void UStaticWindow::ChoiceDamage()
 	{
 		PlayerProgression->SetUpgradeValues(EUpgrades::ProjectileDamage);
 		AvailableLevelUps -= 1;
+		UpdatePlayerStatistics();
 	}
 }
 
