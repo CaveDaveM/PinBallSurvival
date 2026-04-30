@@ -8,17 +8,35 @@
  *	Explanations about the code will be marked with a //
     my thought process will be marked with the double asterix style of commenting*/
 
+UENUM()
+enum class EGOAPFact : uint8
+{
+	HasAmmo,
+	LowHealth,
+	InAttackRange,
+	PlayerDead,
+};
+
+UENUM()
+enum class EGOAPActionType : uint8
+{
+	PickupAmmo,
+	PickupHealth,
+	MoveToTarget,
+	AttackPlayer
+};
+
 USTRUCT()
 struct FGOAPWorldState
 {
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	TMap<FName, bool> WorldFacts;
+	TMap<EGOAPFact, bool> WorldFacts;
 	
 	bool SatisfiesGoals(const FGOAPWorldState& Goal)
 	{
-		for (const TPair<FName, bool>& GoalFacts : Goal.WorldFacts)
+		for (const TPair<EGOAPFact, bool>& GoalFacts : Goal.WorldFacts)
 		{
 			//making the currentvaule a pointer is necessary to check if the key actaully exists
 			bool *CurrentValue = WorldFacts.Find(GoalFacts.Key);
@@ -30,10 +48,10 @@ struct FGOAPWorldState
 		return true;// only retruns true if every single goal was true
 	} 
 	
-	FGOAPWorldState ApplyEffects(const TMap<FName, bool>& Effects)
+	FGOAPWorldState ApplyEffects(const TMap<EGOAPFact, bool>& Effects)
 	{
 		FGOAPWorldState NewState = *this;
-		for (const TPair<FName, bool>& Effect : Effects)
+		for (const TPair<EGOAPFact, bool>& Effect : Effects)
 		{
 			NewState.WorldFacts.Add(Effect.Key, Effect.Value);
 		}
@@ -43,7 +61,7 @@ struct FGOAPWorldState
 	int32 HeuristicCost(const FGOAPWorldState& Goal) const
 	{
 		int32 HeuristicValue = 0;
-		for (const TPair<FName, bool>& GoalFacts : Goal.WorldFacts)
+		for (const TPair<EGOAPFact, bool>& GoalFacts : Goal.WorldFacts)
 		{
 			const bool* CurrentValue = WorldFacts.Find(GoalFacts.Key);
 			if (CurrentValue == nullptr || *CurrentValue != GoalFacts.Value)

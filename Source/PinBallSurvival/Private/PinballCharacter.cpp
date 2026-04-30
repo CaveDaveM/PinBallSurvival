@@ -7,13 +7,11 @@
 #include "EPinCollisionChannel.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameModeClasses/PlayerHUD.h"
 #include "HUD/AlwaysOnDisplay.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APinballCharacter::APinballCharacter()
@@ -124,6 +122,7 @@ void APinballCharacter::BeginPlay()
 		true);
 	
 }
+
 void APinballCharacter::StartGame(EGamePhase GameState)
 {
 	if (GameState == EGamePhase::Playing)
@@ -137,6 +136,9 @@ void APinballCharacter::StartGame(EGamePhase GameState)
 			nullptr,
 			ETeleportType::ResetPhysics);
 		
+		CurrentAmmo = 40;
+		Health = PlayerStats.MaxHealth;
+		UpdateHudStats();
 	}
 }
 

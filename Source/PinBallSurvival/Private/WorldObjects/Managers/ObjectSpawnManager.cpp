@@ -2,9 +2,6 @@
 
 
 #include "WorldObjects/Managers/ObjectSpawnManager.h"
-
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Subsystems/WorldStateSubsystem.h"
 #include "WorldObjects/BaseWorldObject.h"
 
@@ -161,14 +158,7 @@ void AObjectSpawnManager::SpawnWorldObjects( const TArray<FWorldObjectData>& Wor
 	{
 		SpawnedObject->ObjectType = WorldObjects[RandomObject].ObjectType;
 		SpawnedObject->SetObjectRarity(WorldObjects[RandomObject].Rarity);
-		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			SpawnIndication,
-			SpawnedObject->GetActorLocation());
-		if (NiagaraComp)
-		{
-			NiagaraComp->SetRelativeScale3D(FVector(3.0f, 3.0f, 1.0f));
-		}
+		SpawnedObject->SpawnVisualEffects();
 		SpawnedObject->OnDestroyed.AddDynamic(this, &AObjectSpawnManager::OnObjectCollected);
 		WorldState->RegisterWorldObject(SpawnedObject);
 	}

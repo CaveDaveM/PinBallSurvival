@@ -21,7 +21,8 @@ struct FGOAPNode
 	
 	FGOAPWorldState WorldState;
 	
-	FName ActionName;
+	EGOAPActionType ActionType;
+	bool bIsStartingNode = false;
 	
 	float GCost = 0.0f;
 	float HCost = 0.0f;
@@ -38,11 +39,11 @@ public:
 		const FGOAPWorldState& CurrentState,
 		const FGOAPWorldState& GOAlState,
 		const TArray<FGOAPAction>& AvailableActions,
-		TArray<FName>& OutPlan);
+		TArray<EGOAPActionType>& OutPlan);
 	
 private:
 	void ReconstructPlan(
 		const TArray<FGOAPNode>& ClosedList,
 		int32 GoalIndex,
-		TArray<FName>& OutPlan);
+		TArray<EGOAPActionType>& OutPlan);
 };

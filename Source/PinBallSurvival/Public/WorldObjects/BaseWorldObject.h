@@ -8,7 +8,6 @@
 #include "GameFramework/Actor.h"
 #include "Managers/WorldObjectData.h"
 #include "BaseWorldObject.generated.h"
-
 class UNiagaraComponent;
 class UNiagaraSystem;
 class USphereComponent;
@@ -30,9 +29,10 @@ public:
 	USphereComponent* CollisionComponent;
 	
 	EObjectType ObjectType;
-	
 	virtual void SetObjectRarity(EObjectRarity Rarity);
 	//VisualEffects
+	void SpawnVisualEffects();
+	
 	UPROPERTY(EditAnywhere, Category = "Firing")
 	UNiagaraSystem* SpawnIndicationClass;
 	
@@ -44,7 +44,7 @@ protected:
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult);
 	//VisualEffects
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	UNiagaraComponent* SpawnIndication;
 	
 public:	

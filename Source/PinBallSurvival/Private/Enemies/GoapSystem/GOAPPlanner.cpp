@@ -6,23 +6,23 @@
 #include "Enemies/GoapSystem/GOAPActions.h"
 
 bool UGOAPPlanner::Plan(const FGOAPWorldState& CurrentState, const FGOAPWorldState& GOAlState,
-                        const TArray<FGOAPAction>& AvailableActions, TArray<FName>& OutPlan)
+                        const TArray<FGOAPAction>& AvailableActions, TArray<EGOAPActionType>& OutPlan)
 {
 	//Since we are passing the outplan as a reference, we need to clear this list 
 	OutPlan.Empty();
 	
 	//the open list will store nodes that arnt explored yet
 	TArray<FGOAPNode> OpenList;
-	
 	//the closed list for nodes that have been explored and expanded
 	TArray<FGOAPNode> ClosedList;
+	
 	
 	FGOAPNode StartingNode;
 	StartingNode.WorldState = CurrentState;
 	StartingNode.GCost = 0.0f;
 	StartingNode.HCost = CurrentState.HeuristicCost(GOAlState);
 	StartingNode.ParentIndex = -1; //arrays in C start at -1 so this is actually the firstindex
-	StartingNode.ActionName = NAME_None;
+	StartingNode.bIsStartingNode = true;
 	
 	OpenList.Add(StartingNode);
 	//TODO: figgure out the perfect amount for max iterations.
@@ -44,7 +44,6 @@ bool UGOAPPlanner::Plan(const FGOAPWorldState& CurrentState, const FGOAPWorldSta
 		
 		FGOAPNode CurrentNode = OpenList[BestIndex];
 		OpenList.RemoveAt(BestIndex);
-		
 		int32 CurrentClosedIndex = ClosedList.Add(CurrentNode);
 		
 		if (CurrentNode.WorldState.SatisfiesGoals(GOAlState))
@@ -67,10 +66,11 @@ bool UGOAPPlanner::Plan(const FGOAPWorldState& CurrentState, const FGOAPWorldSta
 			
 			FGOAPNode NewNode;
 			NewNode.WorldState = NewState;
-			NewNode.ActionName = Action.ActionName;
+			NewNode.ActionType = Action.ActionType;
 			NewNode.GCost = NewGCost;
 			NewNode.HCost = NewHCost;
 			NewNode.ParentIndex = CurrentClosedIndex;
+			NewNode.bIsStartingNode = false;
 			
 			OpenList.Add(NewNode);
 		}
@@ -78,7 +78,7 @@ bool UGOAPPlanner::Plan(const FGOAPWorldState& CurrentState, const FGOAPWorldSta
 	return false; // this means there is no plan and the goal cant be reached
 }
 
-void UGOAPPlanner::ReconstructPlan(const TArray<FGOAPNode>& ClosedList, int32 GoalIndex, TArray<FName>& OutPlan)
+void UGOAPPlanner::ReconstructPlan(const TArray<FGOAPNode>& ClosedList, int32 GoalIndex, TArray<EGOAPActionType>& OutPlan)
 {
 	int32 CurrentIndex = GoalIndex;
 	
@@ -86,9 +86,9 @@ void UGOAPPlanner::ReconstructPlan(const TArray<FGOAPNode>& ClosedList, int32 Go
 	{
 		const FGOAPNode& Node = ClosedList[CurrentIndex];
 		
-		if (Node.ActionName != NAME_None)
+		if (!Node.bIsStartingNode)
 		{
-			OutPlan.Insert(Node.ActionName, 0);
+			OutPlan.Insert(Node.ActionType, 0);
 		}
 		CurrentIndex = Node.ParentIndex;
 	}

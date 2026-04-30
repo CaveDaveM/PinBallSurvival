@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameModeClasses/PinballGameState.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "WorldObjects/BaseWorldObject.h"
 #include "WorldStateSubsystem.generated.h"
 
+class ABaseWorldObject;
 /**
  * 
  */

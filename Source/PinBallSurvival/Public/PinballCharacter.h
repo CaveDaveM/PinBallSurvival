@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h" 
+#include "NiagaraSystem.h"
 #include "PlayerProgressionSubsystem.h"
 #include "GameFramework/Pawn.h"
 #include "Subsystems/WorldStateSubsystem.h"
@@ -22,7 +23,6 @@ class UProjectileWeapons;
 class USphereComponent;
 class USpringArmComponent;
 class UInputAction;
-class UNiagaraSystem;
 struct FInputActionValue;
 
 UCLASS()
@@ -51,7 +51,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UAlwaysOnDisplay> AlwaysOnDisplayClass;
 	
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* SpeedEffectClass;
 	
 	UFUNCTION()

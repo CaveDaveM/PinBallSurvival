@@ -4,7 +4,6 @@
 #include "CombatantBaseClass.h"
 
 #include "EPinCollisionChannel.h"
-#include "PinBallCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "Projectile/BasicProjectile.h"
 

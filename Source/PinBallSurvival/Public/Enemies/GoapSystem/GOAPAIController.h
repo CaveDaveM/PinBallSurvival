@@ -7,16 +7,11 @@
 #include "Enemies/RangedEnemy.h"
 #include "GOAPAIController.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(GOAPAILOG,Display, All);
 
-struct FGoapNames
-{
-	const FName HasAmmo      = FName("HasAmmo");
-	const FName LowHealth    = FName("LowHealth");
-	const FName InAttackRange = FName("InAttackRange");
-	const FName PlayerDead   = FName("PlayerDead");
+enum class EGOAPActionType : uint8;
+DECLARE_LOG_CATEGORY_EXTERN(GOAPAILOG, Display, All);
 
-};
+
 /**
  * 
  */
@@ -38,13 +33,13 @@ protected:
 	UPROPERTY()
 	APinballCharacter* PlayerCharacterReference;
 	
-	TArray<FName> Plan;
+	TArray<EGOAPActionType> Plan;
 	//Each Action In goapactions need to have its corresponding void state.
-	void SwitchState(int8 CaseNum);
+	void SwitchStateOnPlan(int32 CurrentIndex);
 	
-	void PickupAmmo();
-	void PickupHealth();
-	void MovetoTarget();
+	void PickupAmmo(int32 CurrentIndex);
+	void PickupHealth(int32 CurrentIndex);
+	void MovetoTarget(int32 CurrentIndex);
 	// attack player action is just for a final state. 
 	
 };

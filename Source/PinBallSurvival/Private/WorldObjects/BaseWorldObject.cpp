@@ -33,12 +33,23 @@ void ABaseWorldObject::BeginPlay()
 	Super::BeginPlay();
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABaseWorldObject::OnOverlapBegin);
 	
+	
+}
+
+void ABaseWorldObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
+}
+
+void ABaseWorldObject::SpawnVisualEffects()
+{
 	SpawnIndication = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		GetWorld(),
 		SpawnIndicationClass,
 		GetActorLocation(),
 		FRotator::ZeroRotator,
-		FVector(1.5f, 1.5f, 1.0f));
+		FVector(2.0f, 2.0f, 1.0f));
 	if (SpawnIndication)
 	{
 		switch (ObjectType)
@@ -67,18 +78,11 @@ void ABaseWorldObject::BeginPlay()
 		default: ;
 		}
 	}
-	
 }
-
-void ABaseWorldObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
-}
-
 void ABaseWorldObject::SetObjectRarity(EObjectRarity Rarity)
 {
 }
+
 
 // Called every frame
 void ABaseWorldObject::Tick(float DeltaTime)

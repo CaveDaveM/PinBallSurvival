@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "flippers.generated.h"
 
+class UTimelineComponent;
 class UArrowComponent;
 DECLARE_LOG_CATEGORY_EXTERN(GameInfo, Display, All);
 
@@ -57,6 +58,17 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category = "Pushback")
 	void ApplyForceToPlayerLocal();
+
+	//Visual Effects
+	UFUNCTION()
+	void OnTimelineUpdate(float RotationValue);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pushback")
+	bool RotationOfFlipper;
+	FRotator StartingRotation;
+	UPROPERTY()
+	UTimelineComponent* RotationTimeline;
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* RotationCurve;
 
 
 private:

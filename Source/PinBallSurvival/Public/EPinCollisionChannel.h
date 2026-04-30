@@ -7,6 +7,7 @@
 #define ECC_PLAYER ECC_GameTraceChannel2
 #define ECC_BULLET ECC_GameTraceChannel3
 #define ECC_INTERACTABLE ECC_GameTraceChannel4
+#define ECC_WORLD_OBJECT ECC_GameTraceChannel5
 
 
 /*struct EPinCollisionChannel

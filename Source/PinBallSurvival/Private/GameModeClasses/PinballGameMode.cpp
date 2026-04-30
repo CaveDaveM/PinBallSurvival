@@ -18,6 +18,16 @@ void APinballGameMode::BeginPlay()
 		this,
 		&APinballGameMode::GameStart,
 		5.0f);
+	
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No player controller found"));
+	}
+	
+	FInputModeGameOnly InputMode;
+	PC->SetInputMode(InputMode);
+	PC->bShowMouseCursor = false;
 }
 
 void APinballGameMode::GameStart()

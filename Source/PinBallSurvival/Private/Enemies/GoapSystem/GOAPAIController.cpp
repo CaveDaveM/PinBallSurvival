@@ -2,12 +2,11 @@
 
 
 #include "Enemies/GoapSystem/GOAPAIController.h"
-
 #include "PinballCharacter.h"
-#include "Enemies/RangedEnemy.h"
 #include "Enemies/GoapSystem/GOAPActions.h"
 #include "Enemies/GoapSystem/GOAPPlanner.h"
 #include "Enemies/GoapSystem/GOAPTypes.h"
+#include "Enemies/RangedEnemy.h"
 
 DEFINE_LOG_CATEGORY(GOAPAILOG);
 
@@ -42,47 +41,47 @@ void AGOAPAIController::MakePlan()
 	UE_LOG(GOAPAILOG, Warning, TEXT("bHasAmmo: %s"), bHasAmmo ? TEXT("true") : TEXT("false"));
 	UE_LOG(GOAPAILOG, Warning, TEXT("bIsInRange: %s"), bIsInRange ? TEXT("true") : TEXT("false"));
 	UE_LOG(GOAPAILOG, Warning, TEXT("bLowHealth: %s"), bLowHealth ? TEXT("true") : TEXT("false"));
-	CurrentWorldState.WorldFacts.Add(FName("HasAmmo"),bHasAmmo);
-	CurrentWorldState.WorldFacts.Add(FName("InAttackRange"),bIsInRange);
-	CurrentWorldState.WorldFacts.Add(FName("LowHealth"),bLowHealth);
-	CurrentWorldState.WorldFacts.Add(FName("PlayerDead"),false);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::HasAmmo,bHasAmmo);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::InAttackRange,bIsInRange);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::LowHealth,bLowHealth);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::PlayerDead,false);
 
 	FGOAPWorldState GoalWorldState;
-	GoalWorldState.WorldFacts.Add(FName("PlayerDead"),true);
+	GoalWorldState.WorldFacts.Add(EGOAPFact::PlayerDead,true);
 	
 	//=== one problem is using fnames is the possibility of typos breaking the entire process
 	
 	TArray<FGOAPAction> PossibleActions;
 	
 	FGOAPAction PickupAmmo;
-	PickupAmmo.ActionName = FName("PickupAmmo");
+	PickupAmmo.ActionType = EGOAPActionType::PickupAmmo;
 	PickupAmmo.Cost = 2.0f;
-	PickupAmmo.Preconditions.Add(FName("HasAmmo"), false);
-	PickupAmmo.Effects.Add(FName("HasAmmo"), true);
+	PickupAmmo.Preconditions.Add(EGOAPFact::HasAmmo, false);
+	PickupAmmo.Effects.Add(EGOAPFact::HasAmmo, true);
 	PossibleActions.Add(PickupAmmo);
 	
 	FGOAPAction PickupHealth;
-	PickupHealth.ActionName = FName("PickupHealth");
+	PickupHealth.ActionType = EGOAPActionType::PickupHealth;
 	PickupHealth.Cost = 2.0f;
-	PickupHealth.Preconditions.Add(FName("LowHealth"), true);
-	PickupHealth.Effects.Add(FName("LowHealth"), false);
+	PickupHealth.Preconditions.Add(EGOAPFact::LowHealth, true);
+	PickupHealth.Effects.Add(EGOAPFact::LowHealth, false);
 	PossibleActions.Add(PickupHealth);
 	
 	FGOAPAction MoveToTarget;
-	MoveToTarget.ActionName = FName("MoveToTarget");
+	MoveToTarget.ActionType = EGOAPActionType::MoveToTarget;
 	MoveToTarget.Cost = 3.0f;
-	MoveToTarget.Preconditions.Add(FName("HasAmmo"), true);
-	MoveToTarget.Preconditions.Add(FName("LowHealth"), false);
-	MoveToTarget.Preconditions.Add(FName("InAttackRange"), false);
-	MoveToTarget.Effects.Add(FName("InAttackRange"), true);
+	MoveToTarget.Preconditions.Add(EGOAPFact::HasAmmo, true);
+	MoveToTarget.Preconditions.Add(EGOAPFact::LowHealth, false);
+	MoveToTarget.Preconditions.Add(EGOAPFact::InAttackRange, false);
+	MoveToTarget.Effects.Add(EGOAPFact::InAttackRange, true);
 	PossibleActions.Add(MoveToTarget);
 	
 	FGOAPAction AttackPlayer;
-	AttackPlayer.ActionName = FName("AttackPlayer");
+	AttackPlayer.ActionType = EGOAPActionType::AttackPlayer;
 	AttackPlayer.Cost = 4.0f;
-	AttackPlayer.Preconditions.Add(FName("HasAmmo"), true);
-	AttackPlayer.Preconditions.Add(FName("InAttackRange"), true);
-	AttackPlayer.Effects.Add(FName("PlayerDead"), true);
+	AttackPlayer.Preconditions.Add(EGOAPFact::HasAmmo, true);
+	AttackPlayer.Preconditions.Add(EGOAPFact::InAttackRange, true);
+	AttackPlayer.Effects.Add(EGOAPFact::PlayerDead, true);
 	PossibleActions.Add(AttackPlayer);
 
     // === RUN THE PLANNER ===
@@ -90,37 +89,55 @@ void AGOAPAIController::MakePlan()
     if (bool bDidMakePlan = Planner->Plan(CurrentWorldState,GoalWorldState,PossibleActions,Plan))
     {
 	    UE_LOG(LogTemp, Log, TEXT(" GOAP Plan Found"));
-    	for (int32 i = 0; i < Plan.Num(); i++)
-    	{
-    		UE_LOG(GOAPAILOG, Warning, TEXT("  Step %d: %s"), i + 1, *Plan[i].ToString());
-    	}
     }
 	else
 	{
 		UE_LOG(GOAPAILOG, Warning, TEXT("bDidMakePlan: %s"), bDidMakePlan ? TEXT("true") : TEXT("false"));
 	}
-	
-	SwitchState(0);
+	SwitchStateOnPlan(0);
 }
 
-void AGOAPAIController::SwitchState(int8 CaseNum)
+void AGOAPAIController::SwitchStateOnPlan(int32 CurrentIndex)
+{
+	switch (Plan[CurrentIndex]) {
+	case EGOAPActionType::PickupAmmo:
+		{
+			
+			break;
+		}
+	case EGOAPActionType::PickupHealth:
+		{
+			
+			break;
+		}
+	case EGOAPActionType::MoveToTarget:
+		{
+			
+			break;
+		}
+	case EGOAPActionType::AttackPlayer:
+		{
+			
+			break;
+		}
+	}
+
+}
+
+void AGOAPAIController::PickupAmmo(int32 CurrentIndex)
 {
 	
 }
 
-void AGOAPAIController::PickupAmmo()
+void AGOAPAIController::PickupHealth(int32 CurrentIndex)
 {
 	
 }
 
-void AGOAPAIController::PickupHealth()
-{
-	
-}
-
-void AGOAPAIController::MovetoTarget()
+void AGOAPAIController::MovetoTarget(int32 CurrentIndex)
 {
 	
 }
 
 
+ 

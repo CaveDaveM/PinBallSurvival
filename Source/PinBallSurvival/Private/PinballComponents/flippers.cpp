@@ -5,6 +5,7 @@
 #include "PinballCharacter.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/TimelineComponent.h"
 
 DEFINE_LOG_CATEGORY(GameInfo);
 
@@ -27,6 +28,7 @@ Aflippers::Aflippers()
 	BoxOverlapComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BoxOverlapComp->SetCollisionResponseToAllChannels(ECR_Overlap);
 	
+	RotationTimeline = CreateDefaultSubobject<UTimelineComponent>("RotationTimeline");
 }
 
 
@@ -47,7 +49,13 @@ void Aflippers::BeginPlay()
 	{
 		UE_LOG(GameInfo,Error,TEXT("FLIPPERS/Player character NotFound"));
 	}
+	//Visual Effects	
+	FOnTimelineFloat Update;
+	Update.BindUFunction(this, FName("OnTimelineUpdate"));
 	
+	RotationTimeline->AddInterpFloat(RotationCurve, Update);
+	
+	StartingRotation = GetActorRotation();
 }
 
 void Aflippers::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,6 +64,7 @@ void Aflippers::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OtherActor == PlayerCharacter)
 	{
 		ApplyForceToPlayerLocal();
+		RotationTimeline->PlayFromStart();
 	}
 }
 
@@ -65,6 +74,12 @@ void Aflippers::ApplyForceToPlayerLocal()
 	FVector RotationAndMagnitude = RotationOfArrow * PushStrength;
 	UE_LOG(GameInfo, Warning, TEXT("RotationOfArrow Vector = %s"), *RotationAndMagnitude.ToString());
 	PlayerCharacter->ApplyForceToPlayer(RotationAndMagnitude);
+}
+
+void Aflippers::OnTimelineUpdate(float RotationValue)
+{
+
+	SetActorRelativeRotation(StartingRotation + FRotator(0.0f, RotationValue * 90.0f, 0.0f));
 }
 
 // Called every frame

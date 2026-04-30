@@ -3,9 +3,8 @@
 
 #include "Subsystems/WorldStateSubsystem.h"
 
-#include "Interfaces/HealthInterface.h"
-#include "Interfaces/WeaponInterface.h"
-#include "Kismet/GameplayStatics.h"
+#include "WorldObjects/BaseWorldObject.h"
+#include "WorldObjects/Managers/WorldObjectData.h"
 
 void UWorldStateSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
