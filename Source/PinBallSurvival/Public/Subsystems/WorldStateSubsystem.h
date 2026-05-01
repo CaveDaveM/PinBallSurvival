@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "WorldStateSubsystem.generated.h"
 
+enum class EObjectType : uint8;
 class ABaseWorldObject;
 /**
  * 
@@ -28,6 +29,9 @@ public:
 	void RegisterWorldObject(ABaseWorldObject* SpawnedObject);
 	void UnregisterWorldObject(ABaseWorldObject* SpawnedObject);
 	TArray<ABaseWorldObject*> GetRegisteredWorldObjects() const {return RegisteredHealingObjects;}
+	
+	ABaseWorldObject* GetClosestWorldObjectByType(EObjectType Type, FVector ActorLocation);
+	ABaseWorldObject* FindClosestObjectFromLocation(TArray<ABaseWorldObject*> RegisteredObjects, const FVector& ActorLocation);
 	
 	FOnGameStart OnGameStart;
 	FOnGameInProgress OnGameInProgress;

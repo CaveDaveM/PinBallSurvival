@@ -11,7 +11,7 @@
 AEnemyProjectiles::AEnemyProjectiles()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
 	SetRootComponent(ProjectileMesh);
@@ -25,8 +25,8 @@ AEnemyProjectiles::AEnemyProjectiles()
 	OverlapComponent->SetCollisionResponseToChannel(ECC_PLAYER, ECR_Overlap);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
-	ProjectileMovement->InitialSpeed = 1000.f;
-	ProjectileMovement->MaxSpeed = 1000.f;
+	ProjectileMovement->InitialSpeed = 200.0f;
+	ProjectileMovement->MaxSpeed = 200.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.f;

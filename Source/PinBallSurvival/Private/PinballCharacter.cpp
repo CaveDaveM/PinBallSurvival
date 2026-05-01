@@ -127,7 +127,7 @@ void APinballCharacter::StartGame(EGamePhase GameState)
 {
 	if (GameState == EGamePhase::Playing)
 	{
-		FVector EndTutorialLocation = FVector(2568.0, -16135.0, 20.0 );
+		FVector EndTutorialLocation = FVector(2568.0, -11339.0, 20.0 );
 		FRotator EndTutorialRotation = FRotator(0.0f, 0.0f, -180.0f);
 		SetActorLocationAndRotation(
 			EndTutorialLocation,

@@ -4,12 +4,13 @@
 #include "Enemies/RangedEnemy.h"
 
 #include "Components/SphereComponent.h"
+#include "Enemies/GoapSystem/GOAPAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Projectile/EnemyProjectiles.h"
 
 ARangedEnemy::ARangedEnemy()
 {
-	
+	AIControllerClass = AGOAPAIController::StaticClass();
 }
 
 void ARangedEnemy::BeginPlay()
@@ -19,13 +20,27 @@ void ARangedEnemy::BeginPlay()
 	PlayerCharacterReference = Cast<APawn>(UGameplayStatics::GetPlayerPawn(this, 0));
 	if (PlayerCharacterReference)
 	{
-		GetWorld()->GetTimerManager().SetTimer(
+		/*GetWorld()->GetTimerManager().SetTimer(
 			ShootTimer_TimeHandler,
 			this,
 			&ARangedEnemy::ShootWeapon,
 			5.0f,
-			true);
+			true);*/
 	}
+	CollectGOAPData();
+}
+
+void ARangedEnemy::CollectGOAPData()
+{
+	bool bHasAmmo = CurrentAmmo > 4; 
+	float Distance = GetDistanceTo(PlayerCharacterReference);
+	bool bIsInRange = Distance < TargetDistance;
+	bool bLowHealth = Health < 20.0f; 
+	GOAPData.bHasAmmo = bHasAmmo;
+	GOAPData.bIsWithinDistance = bIsInRange;
+	GOAPData.bIsLowHealth  = bLowHealth;
+	
+	OnGOAPData.Broadcast(GOAPData);
 }
 
 void ARangedEnemy::AddAmmo(const int32 Ammo)
@@ -44,26 +59,36 @@ void ARangedEnemy::AddAmmo(const int32 Ammo)
 
 void ARangedEnemy::ShootWeapon()
 {
-	float Distance = GetDistanceTo(PlayerCharacterReference);
-	if (Distance <= TargetDistance && CurrentAmmo != 0)
-	{
-		FVector TargetLocation = PlayerCharacterReference->GetActorLocation();
-		FVector CurrentLocation = GetActorLocation();
-		//Spawn Projectile
-		FRotator ProjectileRotation = (TargetLocation - CurrentLocation).Rotation();
-		FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
-			
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Instigator = this;
-			
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		AEnemyProjectiles* Projectile = GetWorld()->SpawnActor<AEnemyProjectiles>(ProjectileClass,SpawnTransform,SpawnParams);
-		if (Projectile)
-		{
-			Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
-			CurrentAmmo--;
-		}
+	FVector TargetLocation = PlayerCharacterReference->GetActorLocation();
+	FVector CurrentLocation = GetActorLocation();
+	//Spawn Projectile
+	FRotator ProjectileRotation = (TargetLocation - CurrentLocation).Rotation();
+	FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
 		
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+		
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AEnemyProjectiles* Projectile = GetWorld()->SpawnActor<AEnemyProjectiles>(ProjectileClass,SpawnTransform,SpawnParams);
+	if (Projectile)
+	{
+		Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
+		CurrentAmmo--;
+		
+		if (CurrentAmmo <= 4)
+		{
+			CollectGOAPData();
+		}
+	}
+}
+
+void ARangedEnemy::ApplyDamage(float DamageAmount)
+{
+	Super::ApplyDamage(DamageAmount);
+	
+	if (Health <= 20)
+	{
+		CollectGOAPData();
 	}
 }
 

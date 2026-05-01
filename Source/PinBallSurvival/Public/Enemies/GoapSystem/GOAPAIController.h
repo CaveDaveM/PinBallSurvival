@@ -4,17 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "Enemies/RangedEnemy.h"
 #include "GOAPAIController.generated.h"
 
 
+class APinballCharacter;
+class ARangedEnemy;
+class UNavigationSystemV1;
+class UWorldStateSubsystem;
 enum class EGOAPActionType : uint8;
 DECLARE_LOG_CATEGORY_EXTERN(GOAPAILOG, Display, All);
 
+USTRUCT()
+struct FGOAPData
+{
+	GENERATED_BODY()
+	
+	bool bHasAmmo;
+	bool bIsLowHealth;
+	bool bIsWithinDistance;
+	
+};
 
-/**
- * 
- */
 UCLASS()
 class PINBALLSURVIVAL_API AGOAPAIController : public AAIController
 {
@@ -24,7 +34,6 @@ public:
 	AGOAPAIController();
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
-	void MovePawn(FVector NewLocation);
 	void StartAIAction();
 	void MakePlan();
 	
@@ -32,14 +41,31 @@ protected:
 	ARangedEnemy* OwningPawn;
 	UPROPERTY()
 	APinballCharacter* PlayerCharacterReference;
-	
+	UPROPERTY()
+	UWorldStateSubsystem* WorldState;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	UNavigationSystemV1* NavSystem;
+
+	//Plan to be performed
 	TArray<EGOAPActionType> Plan;
-	//Each Action In goapactions need to have its corresponding void state.
-	void SwitchStateOnPlan(int32 CurrentIndex);
 	
-	void PickupAmmo(int32 CurrentIndex);
-	void PickupHealth(int32 CurrentIndex);
-	void MovetoTarget(int32 CurrentIndex);
+	//AttackingData
+	FTimerHandle AttackPlayer_TimerHandle;
+	float ShootRate = 3.0f;
+	
+	//Data required for the GOAP Plan
+	FGOAPData OwningAIState;
+	void SaveAIGOAPData(FGOAPData PassedData);
+	
+	//Each Action In goapactions need to have its corresponding void state.
+	void SwitchStateOnPlan();
+	void PickupAmmo();
+	void PickupHealth();
+	void MovetoTarget();
+	void AttackPlayer();
+	void ShootPlayer();
+
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 	// attack player action is just for a final state. 
 	
 };

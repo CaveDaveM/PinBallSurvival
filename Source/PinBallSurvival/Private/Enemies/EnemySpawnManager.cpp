@@ -116,7 +116,7 @@ TArray<FVector> AEnemySpawnManager::FindSpawnOffsets(float radius)
 void AEnemySpawnManager::DebugTestLocations()
 {
 	FVector PlayerLocation = PlayerReference->GetActorLocation();
-	TArray<FVector> EnemiesSpawnOffset = FindSpawnOffsets(500.0f);
+	TArray<FVector> EnemiesSpawnOffset = FindSpawnOffsets(5000.0f);
 	for (int i = 0; i < EnemiesSpawnOffset.Num(); ++i)
 	{
 		FVector EnemySpawnLocation = PlayerLocation + EnemiesSpawnOffset[i];

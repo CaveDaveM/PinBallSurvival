@@ -87,3 +87,46 @@ void UWorldStateSubsystem::UnregisterWorldObject(ABaseWorldObject* SpawnedObject
 	RegisteredHealingObjects.Remove(SpawnedObject);
 }
 
+ABaseWorldObject* UWorldStateSubsystem::GetClosestWorldObjectByType(EObjectType Type, FVector ActorLocation)
+{
+	switch (Type) {
+	case EObjectType::HealingObject:
+		{
+			return FindClosestObjectFromLocation(RegisteredHealingObjects, ActorLocation);
+		}
+	case EObjectType::AmmoObject:
+		{
+			return FindClosestObjectFromLocation(RegisteredAmmoObjects, ActorLocation);
+		}
+	case EObjectType::PlayerUpgrades:
+		{
+			return FindClosestObjectFromLocation(RegisteredUpgradeObjects, ActorLocation);
+		}
+	}
+	
+	return nullptr;
+}
+
+ABaseWorldObject* UWorldStateSubsystem::FindClosestObjectFromLocation(TArray<ABaseWorldObject*> RegisteredObjects,
+	const FVector& ActorLocation)
+{
+	ABaseWorldObject* ClosestObject = nullptr;
+	float ClosestDist = TNumericLimits<float>::Max();
+	for (ABaseWorldObject* Object : RegisteredObjects)
+	{
+		if (!IsValid(Object))
+		{
+			continue;
+		}
+		
+		float Distance = FVector::DistSquared(ActorLocation, Object->GetActorLocation());
+		if (Distance < ClosestDist)
+		{
+			ClosestDist = Distance;
+			ClosestObject = Object;
+		}
+	}
+	
+	return ClosestObject;
+}
+

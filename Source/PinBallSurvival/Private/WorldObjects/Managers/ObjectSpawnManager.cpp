@@ -46,6 +46,11 @@ void AObjectSpawnManager::StartSpawingObjects(EGamePhase GameState)
 			&AObjectSpawnManager::FindWorldObjectsArray,
 			10.0f,
 			true);
+
+		for (int i = 0; i < 6; ++i)
+		{
+			FindWorldObjectsArray();
+		}
 	}
 }
 

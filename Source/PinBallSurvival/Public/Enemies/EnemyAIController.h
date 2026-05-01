@@ -28,7 +28,6 @@ protected:
 	void MoveEnemyToPlayer();
 	virtual void OnPossess(APawn* InPawn) override;
 	FVector GetPlayerLocation();
-
 	UPROPERTY(EditDefaultsOnly)
 	float WalkSpeed = 800.0f;
 

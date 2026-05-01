@@ -26,8 +26,8 @@ ABasicProjectile::ABasicProjectile()
 	OverlapComponent->SetCollisionResponseToChannel(ECC_ENEMY, ECR_Overlap);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 3000.f;
+	ProjectileMovement->InitialSpeed = 1000.f;
+	ProjectileMovement->MaxSpeed = 1000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
@@ -43,7 +43,8 @@ void ABasicProjectile::BeginPlay()
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		Despawn_TimerHandle,
-		this, &ABasicProjectile::DespawnProjectile, DespawnDelay);
+		this, &ABasicProjectile::DespawnProjectile,
+		DespawnDelay);
 	
 	
 }
