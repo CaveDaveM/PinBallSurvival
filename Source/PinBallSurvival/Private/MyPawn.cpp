@@ -23,7 +23,7 @@ AMyPawn::AMyPawn()
 	PawnOverlapComponent->SetGenerateOverlapEvents(true);
 	//PawnOverlapComponent->SetCollisionProfileName(TEXT("EnemyCollision"));
 	PawnOverlapComponent->SetCollisionObjectType(ECC_ENEMY);
-	PawnOverlapComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
+	PawnOverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	PawnOverlapComponent->SetCollisionResponseToChannel(ECC_BULLET, ECR_Overlap);
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");

@@ -25,6 +25,9 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	USphereComponent* PawnOverlapComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float Health = 100;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,8 +38,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UFloatingPawnMovement* FloatingPawnMovement;
 	
-	UPROPERTY()
-	float Health = 100;
 	
 
 public:	

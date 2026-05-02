@@ -16,6 +16,7 @@ ACombatantBaseClass::ACombatantBaseClass()
 	PawnDetectionSphere = CreateDefaultSubobject<USphereComponent>("PawnDetectionSphere");
 	PawnDetectionSphere->SetSphereRadius(600.0f);
 	PawnDetectionSphere->SetGenerateOverlapEvents(true);
+	PawnDetectionSphere->SetCollisionObjectType(ECC_WorldDynamic);
 	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	PawnDetectionSphere->SetCollisionResponseToChannel(ECC_ENEMY,ECR_Overlap);

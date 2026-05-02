@@ -26,16 +26,21 @@ void AGOAPAIController::OnPossess(APawn* InPawn)
 	if (OwningPawn)
 	{
 		OwningPawn->OnGOAPData.AddUObject(this,&AGOAPAIController::SaveAIGOAPData);
+		UE_LOG(GOAPAILOG, Log, TEXT(" GOAP AI On Owning Pawn"));
+
 	}
 	
 	StartAIAction();
 }
+
 
 void AGOAPAIController::SaveAIGOAPData(FGOAPData PassedData)
 {
 	OwningAIState.bIsLowHealth = PassedData.bIsLowHealth;
 	OwningAIState.bHasAmmo = PassedData.bHasAmmo;
 	OwningAIState.bIsWithinDistance = PassedData.bIsWithinDistance;
+	//.bIsWithinDistance is redundant, need to check this per plan Instance
+	UE_LOG(GOAPAILOG, Log, TEXT(" GOAP Saved AI data"));
 	
 	MakePlan();
 }
@@ -49,13 +54,24 @@ void AGOAPAIController::StartAIAction()
 
 void AGOAPAIController::MakePlan()
 {
+	
+	UE_LOG(GOAPAILOG, Log, TEXT(" GOAP Making Plan"));
+
 	if (OwningPawn == nullptr) return;
 	FGOAPWorldState CurrentWorldState;
 	
+	float Distance = OwningPawn->GetDistanceTo(PlayerCharacterReference);
+	bool bIsInRange = Distance < OwningPawn->GetRange();
+	
+	UE_LOG(GOAPAILOG, Warning, TEXT("bHasAmmo: %s"), OwningAIState.bHasAmmo ? TEXT("true") : TEXT("false"));
+	UE_LOG(GOAPAILOG, Warning, TEXT("bIsInRange: %s"), bIsInRange ? TEXT("true") : TEXT("false"));
+	UE_LOG(GOAPAILOG, Warning, TEXT("bLowHealth: %s"), OwningAIState.bIsLowHealth ? TEXT("true") : TEXT("false"));
+
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::HasAmmo,OwningAIState.bHasAmmo);
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::InAttackRange,OwningAIState.bIsWithinDistance);
-	CurrentWorldState.WorldFacts.Add(EGOAPFact::LowHealth,OwningAIState.bIsLowHealth);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::LowHealth,bIsInRange);
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::PlayerDead,false);
+	
 
 	FGOAPWorldState GoalWorldState;
 	GoalWorldState.WorldFacts.Add(EGOAPFact::PlayerDead,true);
@@ -99,7 +115,11 @@ void AGOAPAIController::MakePlan()
 	UGOAPPlanner* Planner = NewObject<UGOAPPlanner>();
     if (bool bDidMakePlan = Planner->Plan(CurrentWorldState,GoalWorldState,PossibleActions,Plan))
     {
-	    UE_LOG(LogTemp, Log, TEXT(" GOAP Plan Found"));
+	    UE_LOG(GOAPAILOG, Log, TEXT(" GOAP Plan Found"));
+    	for (int32 i = 0; i < Plan.Num(); i++)
+    	{
+    		UE_LOG(GOAPAILOG, Warning, TEXT("  Step %d: %s"), i + 1, *UEnum::GetValueAsString(Plan[i]));
+    	}
     }
 	else
 	{
@@ -117,11 +137,10 @@ void AGOAPAIController::SwitchStateOnPlan()
 		MakePlan();
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Yellow, TEXT("Switching State"));
-
 	// Grab the first action and remove it from the plan
 	EGOAPActionType CurrentAction = Plan[0];
 	Plan.RemoveAt(0);
+	GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Yellow, TEXT("Switching plan"));
 
 	switch (CurrentAction)
 	{
@@ -162,7 +181,14 @@ void AGOAPAIController::PickupAmmo()
 	}
 	else
 	{
+		WalkTargetLocation = AmmoObject->GetActorLocation();
 		MoveToLocation(AmmoObject->GetActorLocation());
+		GetWorld()->GetTimerManager().SetTimer(
+			CheckIfAtLocation_TimerHandle,
+			this,
+			&AGOAPAIController::CheckIfAtStoredLocation,
+			CheckRate,
+			true);
 	}
 	
 }
@@ -180,21 +206,39 @@ void AGOAPAIController::PickupHealth()
 	}
 	else
 	{
+		WalkTargetLocation = HealthObject->GetActorLocation();
 		MoveToLocation(HealthObject->GetActorLocation());
+		GetWorld()->GetTimerManager().SetTimer(
+			CheckIfAtLocation_TimerHandle,
+			this,
+			&AGOAPAIController::CheckIfAtStoredLocation,
+			CheckRate,
+			true);
 	}
 }
 
 void AGOAPAIController::MovetoTarget()
 {
-	if (!PlayerCharacterReference || !OwningPawn)
+	GetWorld()->GetTimerManager().SetTimer(
+		WalkTimer_TimeHandler,
+		this,
+		&AGOAPAIController::Timer_MoveToTarget,
+		WalkRate,
+		true);
+}
+
+void AGOAPAIController::Timer_MoveToTarget()
+{
+	float DistanceToPlayer = OwningPawn->GetDistanceTo(PlayerCharacterReference);
+	if (DistanceToPlayer <= OwningPawn->GetRange())
 	{
+		GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Yellow, TEXT("Move to target, distance reached"));
+		SwitchStateOnPlan();
+		GetWorld()->GetTimerManager().ClearTimer(WalkTimer_TimeHandler);
 		return;
 	}
-
 	const FVector PlayerLocation = PlayerCharacterReference->GetActorLocation();
-
-	const float DesiredDistance = OwningPawn->GetRange();
-
+	const float DesiredDistance = OwningPawn->GetRange() - 100.0f;
 	// direction from player to ai
 	const FVector DirectionToAI = (OwningPawn->GetActorLocation() - PlayerCharacterReference->GetActorLocation()).GetSafeNormal();
 
@@ -227,11 +271,13 @@ void AGOAPAIController::ShootPlayer()
 	float DistanceToPlayer = OwningPawn->GetDistanceTo(PlayerCharacterReference);
 	if (DistanceToPlayer > OwningPawn->GetRange())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(AttackPlayer_TimerHandle);
+
 		MakePlan();
+		GetWorld()->GetTimerManager().ClearTimer(AttackPlayer_TimerHandle);
 		return;
 	}
 	OwningPawn->ShootWeapon();
+	GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Green, TEXT("Shooting Player"));
 	
 }
 
@@ -239,7 +285,7 @@ void AGOAPAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
 {
 	Super::OnMoveCompleted(RequestID, Result);
 	
-	if (Result.IsSuccess())
+	/*if (Result.IsSuccess())
 	{
 		// Arrived at destination — execute next action in GOAP plan
 		SwitchStateOnPlan();
@@ -248,8 +294,19 @@ void AGOAPAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
 	{
 		// Movement failed — replan
 		MakePlan();
-	}
+	}*/
 }
 
+void AGOAPAIController::CheckIfAtStoredLocation()
+{
+	const float DistSq = FVector::DistSquared(OwningPawn->GetActorLocation(), WalkTargetLocation);
+	if (DistSq <= FMath::Square(ArrivalTolerance))
+	{
+		// Stop the timer so it doesn't keep firing
+		SwitchStateOnPlan();
+		GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Yellow, TEXT("CheckIfAtStoredLocation done"));
+		GetWorld()->GetTimerManager().ClearTimer(CheckIfAtLocation_TimerHandle);
+	}
+}
 
  

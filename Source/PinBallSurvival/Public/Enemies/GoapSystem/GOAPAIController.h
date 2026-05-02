@@ -53,6 +53,15 @@ protected:
 	FTimerHandle AttackPlayer_TimerHandle;
 	float ShootRate = 3.0f;
 	
+	FTimerHandle WalkTimer_TimeHandler;
+	float WalkRate = 0.2f;
+	
+	FTimerHandle CheckIfAtLocation_TimerHandle;
+	float CheckRate = 0.5;
+	float ArrivalTolerance = 50.0f;
+	FVector WalkTargetLocation;
+	void CheckIfAtStoredLocation();
+	
 	//Data required for the GOAP Plan
 	FGOAPData OwningAIState;
 	void SaveAIGOAPData(FGOAPData PassedData);
@@ -62,6 +71,8 @@ protected:
 	void PickupAmmo();
 	void PickupHealth();
 	void MovetoTarget();
+	UFUNCTION()
+	void Timer_MoveToTarget();
 	void AttackPlayer();
 	void ShootPlayer();
 

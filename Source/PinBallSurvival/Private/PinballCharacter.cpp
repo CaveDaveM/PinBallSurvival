@@ -85,6 +85,7 @@ void APinballCharacter::BeginPlay()
 	{
 		WorldState->OnGameInProgress.AddUObject(this, &APinballCharacter::StartGame);
 	}
+	//APinballGameState = GetWorld()->GetGameState<APinballGameState>();
 	
 	
 	//Players Always on Display that moves around with the player
@@ -149,6 +150,8 @@ void APinballCharacter::ShotFired()
 	Super::ShotFired();
 	UpdateHudStats();
 }
+
+
 void APinballCharacter::UpdatePlayerStats(const FPlayerStats NewPlayerStats)
 {
 	PlayerStats = NewPlayerStats;
@@ -226,7 +229,7 @@ void APinballCharacter::OpenGameMenu()
 {
 	HUD->ToggleInGameMenu();
 }
-//PlayerHealing
+//Health Handling
 void APinballCharacter::ApplyHealing(float HealAmount)
 {
 	Super::ApplyHealing(HealAmount);
@@ -240,6 +243,22 @@ void APinballCharacter::ApplyHealing(float HealAmount)
 	}
 	UpdateHudStats();
 }
+
+void APinballCharacter::ApplyDamage(float DamageAmount)
+{
+	Super::ApplyDamage(DamageAmount);
+	Health -= DamageAmount;
+	CheckPlayerHeath();
+}
+
+void APinballCharacter::CheckPlayerHeath()
+{
+	if (Health < 0.0f)
+	{
+		
+	}
+}
+
 // Called to bind functionality to input
 void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

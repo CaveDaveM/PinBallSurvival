@@ -84,8 +84,28 @@ void UWorldStateSubsystem::RegisterWorldObject(ABaseWorldObject* SpawnedObject)
 
 void UWorldStateSubsystem::UnregisterWorldObject(ABaseWorldObject* SpawnedObject)
 {
-	RegisteredHealingObjects.Remove(SpawnedObject);
-}
+	switch (SpawnedObject->ObjectType) 
+	{
+	case EObjectType::HealingObject:
+		{
+			RegisteredHealingObjects.Remove(SpawnedObject);
+			break;
+		}
+	case EObjectType::AmmoObject:
+		{
+			RegisteredAmmoObjects.Remove(SpawnedObject);
+			break;
+		}
+	case EObjectType::PlayerUpgrades:
+		{
+			RegisteredUpgradeObjects.Remove(SpawnedObject);
+			break;
+		}
+	default:
+		{
+			UE_LOG(LogTemp, Error, TEXT("SpawnedObject deRegistered incorrectly"));
+		}
+	}}
 
 ABaseWorldObject* UWorldStateSubsystem::GetClosestWorldObjectByType(EObjectType Type, FVector ActorLocation)
 {

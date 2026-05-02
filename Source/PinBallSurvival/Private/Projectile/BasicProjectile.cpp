@@ -19,11 +19,11 @@ ABasicProjectile::ABasicProjectile()
 	
 	OverlapComponent = CreateDefaultSubobject<USphereComponent>("OverlapComponent");
 	OverlapComponent->SetupAttachment(RootComponent);
-	OverlapComponent->SetGenerateOverlapEvents(true);
-	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapComponent->SetCollisionObjectType(ECC_BULLET);
+	OverlapComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	OverlapComponent->SetCollisionResponseToChannel(ECC_ENEMY, ECR_Overlap);
+	OverlapComponent->SetGenerateOverlapEvents(true);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	ProjectileMovement->InitialSpeed = 1000.f;
@@ -57,6 +57,7 @@ void ABasicProjectile::OnOverlaBegin(UPrimitiveComponent* OverlappedComponent, A
 		if (IHealthInterface* EnemyInterface = Cast<IHealthInterface>(OtherActor))
 		{
 			EnemyInterface->ApplyDamage(ProjectileDamage);
+			GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"OverLapping Health Actor");
 			NumberOfActorsHit++;
 			CheckPiercingPower();
 		}

@@ -35,6 +35,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void ApplyHealing(float HealAmount) override;
+	virtual void ApplyDamage(float DamageAmount) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* PlayerMesh;
@@ -71,9 +72,10 @@ protected:
 	
 	virtual void BeginPlay() override;
 	
+	/*UPROPERTY()
+	GameSate*/
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
-	
 	UPROPERTY()
 	UWorldStateSubsystem* WorldState;
 	
@@ -101,7 +103,10 @@ protected:
 	void UpdateCurrentSpeed();
 	void CalculateDamage();
 	virtual void ShotFired() override;
+	void CheckPlayerHeath();
+	
 
+protected:
 	FTimerHandle UpdateCurrentSpeed_TimeHandle;
 	float CurrentSpeed;
 	float DamageScaling = 0.1f;
