@@ -32,6 +32,7 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	void DestroyActor();
+	UFUNCTION()
 	void OnOverlaBegin(UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,

@@ -25,8 +25,8 @@ AEnemyProjectiles::AEnemyProjectiles()
 	OverlapComponent->SetCollisionResponseToChannel(ECC_PLAYER, ECR_Overlap);
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
-	ProjectileMovement->InitialSpeed = 200.0f;
-	ProjectileMovement->MaxSpeed = 200.0f;
+	ProjectileMovement->InitialSpeed = 500.0f;
+	ProjectileMovement->MaxSpeed = 500.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
@@ -36,6 +36,8 @@ AEnemyProjectiles::AEnemyProjectiles()
 void AEnemyProjectiles::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyProjectiles::OnOverlaBegin);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		Despawn_TimeHandle,
