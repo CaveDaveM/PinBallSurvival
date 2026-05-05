@@ -21,7 +21,7 @@ enum EGamePhase : uint8
 // i read that dynamic delegates are something like 10x slower and im not going to be using these in 
 // blueprints anyway so i dont need them to be dynamic
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnScoreChange, int32);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChange, EGamePhase);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStateChange, EGamePhase, bool);
 UCLASS()
 class PINBALLSURVIVAL_API APinballGameState : public AGameStateBase
 {
@@ -29,7 +29,7 @@ class PINBALLSURVIVAL_API APinballGameState : public AGameStateBase
 public:
 	virtual void Tick(float DeltaSeconds) override;
 	void SetCurrentScore(int32 NewScore);
-	void SetGamePhase(EGamePhase NewPhase);
+	void SetGamePhase(EGamePhase NewPhase, bool bIsGameWon = false);
 	void SetHighScore();
 	
 	FOnScoreChange OnScoreChange;

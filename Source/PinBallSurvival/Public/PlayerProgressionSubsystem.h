@@ -7,6 +7,10 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PlayerProgressionSubsystem.generated.h"
 
+class USaveGameSubsytem;
+class UWorldStateSubsystem;
+
+DECLARE_LOG_CATEGORY_EXTERN(LOGPlayerProgression, Display, All);
 /**
  * 
  */
@@ -69,6 +73,7 @@ public:
 	void AddXP(int32 Amount);
 	int32 GetCurrentLevel() const { return CurrentLevel; }
 	int32 GetCurrentXP() const { return CurrentXP; }
+	int32 CalculateEndGameXP(bool bIsGameWon);
 	int32 CalculateXPForNextLevel() const {return RequiredXP - CurrentXP;}
 	int32 CalculateNextLevelXPRequirement();
 	FPlayerStats GetPlayerStats() const { return PlayerStats; }
@@ -76,8 +81,17 @@ public:
 	void SetUpgradeValues(EUpgrades DecidedUpgrade);
 
 private:
+	UPROPERTY()
+	UWorldStateSubsystem* WorldState ;
+	UPROPERTY()
+	USaveGameSubsytem* SaveGame;
+	
 	int32 CurrentLevel = 1;
 	int32 CurrentXP = 0;
 	int32 RequiredXP = 5;
 	int32 StoredLevels = 0;
+	int32 EnemiesKillCount = 0;
+	
+	void SaveOnEndGame(EGamePhase GamePhase, bool bIsGameWon);
+	
 };

@@ -14,7 +14,7 @@ class ABaseWorldObject;
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStart, EGamePhase);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameInProgress, EGamePhase);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEnded, EGamePhase);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGameEnded, EGamePhase, bool);
 
 UCLASS()
 class PINBALLSURVIVAL_API UWorldStateSubsystem : public UWorldSubsystem
@@ -37,14 +37,12 @@ public:
 	FOnGameInProgress OnGameInProgress;
 	FOnGameEnded OnGameEnded;
 private:
-	void SwitchOnGameStateChange(EGamePhase ChangedState);
+	void SwitchOnGameStateChange(EGamePhase ChangedState, bool bWinState = false);
 	
 	UPROPERTY()
 	TArray<ABaseWorldObject*> RegisteredHealingObjects;
-	
 	UPROPERTY()
 	TArray<ABaseWorldObject*> RegisteredAmmoObjects;
-	
 	UPROPERTY()
 	TArray<ABaseWorldObject*> RegisteredUpgradeObjects;
 };

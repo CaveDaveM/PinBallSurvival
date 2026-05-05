@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystems/SaveGameSubsytem.h"
 
 AMainMenuGameMode::AMainMenuGameMode()
 {
@@ -22,6 +23,13 @@ void AMainMenuGameMode::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No player controller found"));
 	}
+	
+	/*USaveGameSubsytem* SavedGameSystem = GetWorld()->GetGameInstance()->GetSubsystem<USaveGameSubsytem>();
+	if (SavedGameSystem)
+	{
+		SavedGameSystem->LoadGame();
+	}*/
+	
 	
 	TArray<AActor*> CameraFound;
 	UGameplayStatics::GetAllActorsOfClassWithTag(
@@ -41,6 +49,7 @@ void AMainMenuGameMode::BeginPlay()
 		MainMenuWidget = CreateWidget<UMainMenuWidget>(PC, MainMenuWidgetClass);
 		if (MainMenuWidget)
 		{
+			MainMenuWidget->LoadPlayerProgression();
 			MainMenuWidget->AddToViewport();
 		}
 	}

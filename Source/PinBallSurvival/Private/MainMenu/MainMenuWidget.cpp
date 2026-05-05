@@ -7,8 +7,11 @@
 #include "Components/CheckBox.h"
 #include "Components/ComboBoxString.h"
 #include "Components/Slider.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/GameUserSettings.h"
+#include "GameFramework/SaveGame.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Subsystems/SaveGameSubsytem.h"
 
 void UMainMenuWidget::NativeOnInitialized()
 {
@@ -50,7 +53,7 @@ void UMainMenuWidget::NativeConstruct()
 		ApplyButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnApplyButtonPressed);
 	}
 	
-	PopulateResoultions();
+	PopulateResolutions();
 	LoadCurrentSettings();
 }
 
@@ -68,7 +71,7 @@ void UMainMenuWidget::OnMapTwoButtonPressed()
 	GetWorld()->SeamlessTravel(MapName);
 }
 
-void UMainMenuWidget::PopulateResoultions()
+void UMainMenuWidget::PopulateResolutions()
 {
 	ResolutionBox->ClearOptions();
 	
@@ -93,6 +96,17 @@ void UMainMenuWidget::LoadCurrentSettings()
 		FullscreenCheckBox->SetIsChecked(Settings->GetFullscreenMode() == EWindowMode::Fullscreen);
 	}
 	
+}
+
+void UMainMenuWidget::LoadPlayerProgression()
+{
+	USaveGameSubsytem* SaveGameSystem = GetWorld()->GetGameInstance()->GetSubsystem<USaveGameSubsytem>();
+	if (SaveGameSystem)
+	{
+		int32 PlayerXp = SaveGameSystem->GetPlayerXP();
+		PlayerXpDisplay->SetText(FText::Format(FText::FromString(" You Have {0} XP"),
+			PlayerXp));
+	}
 }
 
 

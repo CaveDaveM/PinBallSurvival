@@ -22,7 +22,6 @@ class ABasicProjectile;
 class UProjectileWeapons;
 class USphereComponent;
 class USpringArmComponent;
-class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
@@ -72,13 +71,12 @@ protected:
 	
 	virtual void BeginPlay() override;
 	
-	/*UPROPERTY()
-	GameSate*/
+	UPROPERTY()
+	APinballGameState* PinballGS;
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
 	UPROPERTY()
 	UWorldStateSubsystem* WorldState;
-	
 	UPROPERTY()
 	APlayerHUD* HUD;
 	

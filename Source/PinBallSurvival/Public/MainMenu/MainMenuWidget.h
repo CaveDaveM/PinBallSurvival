@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuWidget.generated.h"
 
+class UTextBlock;
 class USlider;
 class UCheckBox;
 class UComboBoxString;
@@ -38,7 +39,12 @@ public:
 	
 	UPROPERTY(meta =(BindWidget))
 	UButton* ApplyButton;
+	//Player Progression
+	
+	UPROPERTY(meta =(BindWidget))
+	UTextBlock* PlayerXpDisplay;
 
+	void LoadPlayerProgression();
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
@@ -61,7 +67,7 @@ protected:
 	UFUNCTION()
 	void OnApplyButtonPressed();
 	
-	void PopulateResoultions();
+	void PopulateResolutions();
 	void LoadCurrentSettings();
 	
 private:

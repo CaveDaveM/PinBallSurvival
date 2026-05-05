@@ -2,6 +2,7 @@
 
 
 #include "GameModeClasses/PlayerHUD.h"
+#include "HUD/EndOfGame/EndGameWidget.h"
 #include "HUD/TutorialWidget.h"
 #include "HUD/InteractionWidget.h"
 #include "HUD/StaticWindow.h"
@@ -19,6 +20,7 @@ void APlayerHUD::BeginPlay()
 	if (WorldState)
 	{
 		WorldState->OnGameStart.AddUObject(this, &APlayerHUD::ToggleStartGameMenu);
+		WorldState->OnGameEnded.AddUObject(this, &APlayerHUD::ShowEndGameMenu);
 	}
 	else
 	{
@@ -46,17 +48,15 @@ void APlayerHUD::ToggleInGameMenu()
 	{
 		HideInGameMenu();
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),1.0);
-		const FInputModeGameOnly InputMode;
-		GetOwningPlayerController()-> SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(false);
+		const FInputModeGameAndUI InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
 	}
 	else
 	{
 		DisplayInGameMenu();
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),0.1);
 		const FInputModeGameAndUI InputMode;
-		GetOwningPlayerController()-> SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(true);
+		GetOwningPlayerController()->SetInputMode(InputMode);
 	}
 }
 
@@ -83,21 +83,17 @@ void APlayerHUD::ToggleStartGameMenu(EGamePhase GamePhase) const
 
 	if (GamePhase == EGamePhase::StartPlay)
 	{
-		GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Green,TEXT("Toggle Start Game Menu"));
 		DisplayStartGameMenu();
 		const FInputModeGameAndUI InputMode;
-		GetOwningPlayerController()-> SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(true);
+		GetOwningPlayerController()->SetInputMode(InputMode);
 	}
 	else if (GamePhase == EGamePhase::Playing)
 	{
 		HideStartGameMenu();
-		const FInputModeGameOnly InputMode;
-		GetOwningPlayerController()-> SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(false);
+		const FInputModeGameAndUI InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
 	}
 }
-
 void APlayerHUD::DisplayStartGameMenu() const
 {
 	if (TutorialWidget)
@@ -112,5 +108,25 @@ void APlayerHUD::HideStartGameMenu() const
 		TutorialWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
+//EndOfGame
+void APlayerHUD::ShowEndGameMenu(EGamePhase GamePhase, bool bIsGameWon)
+{
+	if (GamePhase != EGamePhase::Ended)
+	{
+		return;
+	}
+	
+	if (EndOfGameMenuClass)
+	{
+		const FInputModeUIOnly InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		EndGameWidget = CreateWidget<UEndGameWidget>(GetWorld(), EndOfGameMenuClass);
+		EndGameWidget->OnGameFinished(bIsGameWon);
+		EndGameWidget->AddToViewport(6);
+		EndGameWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
 
 

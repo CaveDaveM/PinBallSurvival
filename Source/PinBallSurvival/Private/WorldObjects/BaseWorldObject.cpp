@@ -24,6 +24,7 @@ ABaseWorldObject::ABaseWorldObject()
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECC_PLAYER,ECR_Overlap);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_ENEMY,ECR_Overlap);
 
 }
 
@@ -39,17 +40,19 @@ void ABaseWorldObject::BeginPlay()
 void ABaseWorldObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
 }
 
 void ABaseWorldObject::SpawnVisualEffects()
 {
-	SpawnIndication = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(),
+	SpawnIndication = UNiagaraFunctionLibrary::SpawnSystemAttached(
 		SpawnIndicationClass,
-		GetActorLocation(),
+		RootComponent,                    // attach to actor's root
+		NAME_None,
+		FVector::ZeroVector,
 		FRotator::ZeroRotator,
-		FVector(2.0f, 2.0f, 1.0f));
+		EAttachLocation::KeepRelativeOffset,
+		true); 
 	if (SpawnIndication)
 	{
 		switch (ObjectType)
@@ -79,6 +82,8 @@ void ABaseWorldObject::SpawnVisualEffects()
 		}
 	}
 }
+
+
 void ABaseWorldObject::SetObjectRarity(EObjectRarity Rarity)
 {
 }
@@ -90,4 +95,5 @@ void ABaseWorldObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
 

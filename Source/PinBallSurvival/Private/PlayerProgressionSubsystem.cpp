@@ -3,9 +3,30 @@
 
 #include "PlayerProgressionSubsystem.h"
 
+#include "GameFramework/SaveGame.h"
+#include "Subsystems/SaveGameSubsytem.h"
+#include "Subsystems/WorldStateSubsystem.h"
+
+DEFINE_LOG_CATEGORY(LOGPlayerProgression);
+
 void UPlayerProgressionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+	SaveGame = InWorld.GetGameInstance()->GetSubsystem<USaveGameSubsytem>();
+	if (!SaveGame)
+	{
+		UE_LOG(LOGPlayerProgression, Warning, TEXT("Could not find SaveGameSubsystem in PlayerProgression"));
+	}
+	else
+	{
+		UE_LOG(LOGPlayerProgression, Warning, TEXT("Could find SaveGameSubsystem in PlayerProgression"));
+	}
+	
+	WorldState = GetWorld()->GetSubsystem<UWorldStateSubsystem>();
+	if (WorldState)
+	{
+		WorldState->OnGameEnded.AddUObject(this, &UPlayerProgressionSubsystem::SaveOnEndGame);
+	}
 }
 
 void UPlayerProgressionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -20,6 +41,7 @@ void UPlayerProgressionSubsystem::Deinitialize()
 
 void UPlayerProgressionSubsystem::AddXP(int32 Amount)
 {
+	EnemiesKillCount++;
 	CurrentXP += Amount;
 	if (CurrentXP >= RequiredXP )
 	{
@@ -28,6 +50,18 @@ void UPlayerProgressionSubsystem::AddXP(int32 Amount)
 		RequiredXP = CalculateNextLevelXPRequirement();
 	}
 	OnLevelUp.Broadcast(CurrentLevel);
+}
+
+int32 UPlayerProgressionSubsystem::CalculateEndGameXP(bool bIsGameWon)
+{
+	if (bIsGameWon)
+	{
+		return EnemiesKillCount;
+	}
+	else
+	{
+		return EnemiesKillCount / 2;
+	}
 }
 
 int32 UPlayerProgressionSubsystem::CalculateNextLevelXPRequirement()
@@ -58,4 +92,18 @@ void UPlayerProgressionSubsystem::SetUpgradeValues(EUpgrades DecidedUpgrade)
 		}
 	}
 	OnPlayerStats.Broadcast(PlayerStats);
+}
+
+void UPlayerProgressionSubsystem::SaveOnEndGame(EGamePhase GamePhase, bool bIsGameWon)
+{
+	if (GamePhase != EGamePhase::Ended)
+	{
+		UE_LOG(LOGPlayerProgression, Warning , TEXT("PlayerSubsystem, on game end reporting game not ended"))
+		return; 
+	}
+	
+	int32 EndGameXP = CalculateEndGameXP(bIsGameWon);
+	SaveGame->SetPlayerXP(EndGameXP);
+	SaveGame->SaveGame();
+
 }

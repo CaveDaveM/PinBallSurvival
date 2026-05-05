@@ -71,9 +71,9 @@ void ABumper::PushAwayActor(APinballCharacter* OverlappedActor, FVector HitNorma
 		ReflectedVelocity = Normal * MinBumpSpeed;
 	}
 		
-	//OverlappedActor->ApplyForceToPlayer(ReflectedVelocity);
 	OverlappedActor->PlayerMesh->SetPhysicsLinearVelocity(ReflectedVelocity);
 	
+	//OverlappedActor->ApplyForceToPlayer(ReflectedVelocity);
 }
 
 /*FVector ABumper::ReflectVector(FVector Direction, FVector WallNormal, float Restitution)

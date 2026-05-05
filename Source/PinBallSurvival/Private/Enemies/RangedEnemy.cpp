@@ -55,6 +55,7 @@ void ARangedEnemy::AddAmmo(const int32 Ammo)
 	{
 		CurrentAmmo = PredictedAmmo;
 	}
+	CollectGOAPData();
 }
 
 void ARangedEnemy::ShootWeapon()

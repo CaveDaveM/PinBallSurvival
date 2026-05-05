@@ -26,7 +26,7 @@ void UWorldStateSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState)
+void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState, bool bWinState)
 {
 	switch (ChangedState) {
 	case None:
@@ -40,14 +40,14 @@ void UWorldStateSubsystem::SwitchOnGameStateChange(EGamePhase ChangedState)
 		}
 	case Playing:
 		{
-			GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Green,"WorldStateGame Playing");
 			OnGameStart.Broadcast(Playing);
 			OnGameInProgress.Broadcast(Playing);
 			break;
 		}
 	case Ended:
 		{
-			OnGameEnded.Broadcast(Ended);
+			GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Green,"WorldStateGame Ended");
+			OnGameEnded.Broadcast(Ended, bWinState);
 			break;
 		}
 	}
@@ -149,4 +149,3 @@ ABaseWorldObject* UWorldStateSubsystem::FindClosestObjectFromLocation(TArray<ABa
 	
 	return ClosestObject;
 }
-

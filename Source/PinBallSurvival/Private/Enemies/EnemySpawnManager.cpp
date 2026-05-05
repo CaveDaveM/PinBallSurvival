@@ -16,8 +16,6 @@ AEnemySpawnManager::AEnemySpawnManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	EnemySpawnBounds = CreateDefaultSubobject<UBoxComponent>("EnemySpawnBounds");
-	EnemySpawnBounds->SetBoundsScale(40.0f);
 }
 
 // Called when the game starts or when spawned
@@ -83,22 +81,13 @@ void AEnemySpawnManager::StartGame(EGamePhase GameState)
 	}
 }
 
-void AEnemySpawnManager::StartWave()
-{
-	CurrentWaveData = WaveSpawnTable->FindRow<FWaveSpawnParams>(GetCurrentWaveName(),"");
-	if (CurrentWaveData)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Wave Started"));
-		StartWaveSelection();
-	}
-}
 
 TArray<FVector> AEnemySpawnManager::FindSpawnOffsets(float radius)
 {
-	const float AngleStep = 360.0f / CurrentWaveData->Amount;
+	const float AngleStep = 360.0f / CurrentWaveData->Sections[SectionInt].Amount;
 	float CurrentAngle = 0.0f;
 	TArray<FVector> EnemiesSpawnOffset;
-	for (int i = 0; i < CurrentWaveData->Amount; ++i)
+	for (int i = 0; i < CurrentWaveData->Sections[SectionInt].Amount; ++i)
 	{
 		float Radians = FMath::DegreesToRadians(CurrentAngle);
 		FVector SpawnOffset(
@@ -123,8 +112,16 @@ void AEnemySpawnManager::DebugTestLocations()
 		DrawDebugSphere(GetWorld(),EnemySpawnLocation,25.0f,30,FColor::Red,true);
 	}
 }
-
-
+void AEnemySpawnManager::StartWave()
+{
+	CurrentWaveData = WaveSpawnTable->FindRow<FWaveSpawnParams>(GetCurrentWaveName(),"");
+	if (CurrentWaveData)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Wave Started"));
+		SectionInt = 0;
+		StartWaveSelection();
+	}
+}
 void AEnemySpawnManager::StartWaveSelection()
 {
 	EnemyCount = 0;
@@ -134,13 +131,13 @@ void AEnemySpawnManager::StartWaveSelection()
 		WaveSpawner_TimeHandler,
 		this,
 		&AEnemySpawnManager::SpawnEnemies,
-		CurrentWaveData->SpawnDelay,
+		CurrentWaveData->Sections[SectionInt].SpawnDelay,
 		true);
 }
 
 void AEnemySpawnManager::SpawnEnemies()
 {
-	if (EnemyCount > CurrentWaveData->Amount) return;
+	if (EnemyCount > CurrentWaveData->Sections[SectionInt].Amount) return;
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -151,7 +148,7 @@ void AEnemySpawnManager::SpawnEnemies()
 	FRotator SpawnRotation = FRotator::ZeroRotator;
 
 	AMyPawn* Enemy = GetWorld()->SpawnActor<AMyPawn>(
-		CurrentWaveData->Enemy,
+		CurrentWaveData->Sections[SectionInt].Enemy,
 		SpawnLocation,
 		SpawnRotation,
 		SpawnParams);
@@ -164,12 +161,31 @@ void AEnemySpawnManager::SpawnEnemies()
 
 	EnemyCount++;
 
-	if (EnemyCount == CurrentWaveData->Amount)
+	if (EnemyCount == CurrentWaveData->Sections[SectionInt].Amount)
 	{
 		GetWorldTimerManager().ClearTimer(WaveSpawner_TimeHandler);
-		EndWave();
+		EndWaveSection();
 	}
 	// this way of doing the spawn does allow for 
+}
+
+void AEnemySpawnManager::EndWaveSection()
+{
+	SectionInt++;
+	
+	if (CurrentWaveData->Sections.Num() > SectionInt)
+	{
+		GetWorldTimerManager().SetTimer(
+			WaveSpawner_TimeHandler,
+			this,
+			&AEnemySpawnManager::StartWaveSelection,
+			CurrentWaveData->Sections[SectionInt].EndSectionInterval,
+			false);
+	}
+	else if (CurrentWaveData->Sections.Num() <= SectionInt)
+	{
+		EndWave();
+	}
 }
 
 void AEnemySpawnManager::EndWave()
@@ -181,7 +197,7 @@ void AEnemySpawnManager::EndWave()
 		GetWorldTimerManager().SetTimer(
 			WaveSpawner_TimeHandler,
 			this,&AEnemySpawnManager::StartWave,
-			CurrentWaveData->SectionSpawnDelay,
+			CurrentWaveData->EndWaveIntervals,
 			false);
 	}
 	else
@@ -193,7 +209,8 @@ void AEnemySpawnManager::EndWave()
 			WaveSpawner_TimeHandler,
 			this,
 			&AEnemySpawnManager::EndGame,
-			20.0f);
+			20.0f,
+			false);
 	}
 }
 
@@ -202,7 +219,7 @@ void AEnemySpawnManager::EndGame()
 	APinballGameState* PinballGS = GetWorld()->GetGameState<APinballGameState>();
 	if (PinballGS)
 	{
-		PinballGS->SetGamePhase(EGamePhase::Ended);
+		PinballGS->SetGamePhase(EGamePhase::Ended, true);
 	}
 }
 

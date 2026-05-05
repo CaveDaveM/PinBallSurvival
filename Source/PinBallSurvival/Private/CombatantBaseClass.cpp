@@ -3,6 +3,7 @@
 
 #include "CombatantBaseClass.h"
 
+#include "EnhancedInputComponent.h"
 #include "EPinCollisionChannel.h"
 #include "Components/SphereComponent.h"
 #include "Projectile/BasicProjectile.h"
@@ -12,85 +13,43 @@ ACombatantBaseClass::ACombatantBaseClass()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
-	PawnDetectionSphere = CreateDefaultSubobject<USphereComponent>("PawnDetectionSphere");
-	PawnDetectionSphere->SetSphereRadius(600.0f);
-	PawnDetectionSphere->SetGenerateOverlapEvents(true);
-	PawnDetectionSphere->SetCollisionObjectType(ECC_WorldDynamic);
-	PawnDetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	PawnDetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	PawnDetectionSphere->SetCollisionResponseToChannel(ECC_ENEMY,ECR_Overlap);
 
 }
-
 // Called every frame
 void ACombatantBaseClass::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-
-// Called to bind functionality to input
-void ACombatantBaseClass::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 // Called when the game starts or when spawned
 void ACombatantBaseClass::BeginPlay()
 {
 	Super::BeginPlay();
+	PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	
-	PawnDetectionSphere->OnComponentBeginOverlap.AddDynamic(this,&ACombatantBaseClass::OnOverlapBegin);
-	PawnDetectionSphere->OnComponentEndOverlap.AddDynamic(this,&ACombatantBaseClass::OverlapEnd);
-	
-	GetWorld()->GetTimerManager().SetTimer(
-		FireWeapon_TimerHandle,
-		this,
-		&ACombatantBaseClass::FireWeapon,
-		1.0f,
-		true);
 }
-
-void ACombatantBaseClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
+//Firing Weapons
+void ACombatantBaseClass::OnClick()
 {
-	if (OtherActor != this)
+	FHitResult Hit;
+	
+	if (PC->GetHitResultUnderCursor(ECC_Visibility,false, Hit))
 	{
-		if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
-		{
-			ProximityEnemyArray.Add(OtherActor);
-#if 0			
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,  
-			                                 FString::Printf(TEXT("Number Of Enemies: %d"), ProximityEnemyArray.Num()));
-#endif
-		}
+		FVector ClickLocation = Hit.Location;
+		FireWeapon(ClickLocation);
 	}
 }
 
-void ACombatantBaseClass::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ACombatantBaseClass::FireWeapon(FVector ClickedLocation)
 {
-	if (OtherActor != this)
-	{
-		if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
-		{
-			ProximityEnemyArray.Remove(OtherActor);
-		}
-	}
-}
-
-void ACombatantBaseClass::FireWeapon()
-{
-	if (ProximityEnemyArray.Num() > 0 && CurrentAmmo > 0)
+	if (CurrentAmmo > 0)
 	{
 
-		AActor* CurrentTarget = ProximityEnemyArray[0];
-		FVector TargetLocation = CurrentTarget->GetActorLocation();
+		
+		
 		FVector CurrentLocation = GetActorLocation();
 		//Spawn Projectile
-		FVector ProjectileDirection = TargetLocation - CurrentLocation;
+		FVector ProjectileDirection = ClickedLocation - CurrentLocation;
 		ProjectileDirection.Z = 0.0f;
 		FRotator ProjectileRotation = ProjectileDirection.Rotation();
 		FTransform SpawnTransform = FTransform(ProjectileRotation, CurrentLocation);
@@ -112,8 +71,6 @@ void ACombatantBaseClass::FireWeapon()
 		}
 	}
 }
-
-
 void ACombatantBaseClass::ShotFired()
 {
 }
@@ -121,9 +78,9 @@ void ACombatantBaseClass::UpdatePlayerHealth()
 {
 	//TODO: Cant remember what i was doing here
 }
-
-
-
+void ACombatantBaseClass::UpdateHudStats()
+{
+}
 void ACombatantBaseClass::AddAmmo(const int32 Ammo)
 {
 	IWeaponInterface::AddAmmo(Ammo);
@@ -139,8 +96,20 @@ void ACombatantBaseClass::AddAmmo(const int32 Ammo)
 	}
 	UpdateHudStats();
 }
-
-void ACombatantBaseClass::UpdateHudStats()
+// Called to bind functionality to input
+void ACombatantBaseClass::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		// Moving
+		EnhancedInputComponent->BindAction(ClickAction, ETriggerEvent::Started, this, &ACombatantBaseClass::OnClick);
+
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,TEXT("Move Input Component invalid"));
+	}
 }
 

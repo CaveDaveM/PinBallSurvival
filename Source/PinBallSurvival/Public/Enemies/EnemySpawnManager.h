@@ -51,6 +51,7 @@ private:
 	void StartWave();
 	void StartWaveSelection();
 	void SpawnEnemies();
+	void EndWaveSection();
 	void EndWave();
 	void EndGame();
 	UFUNCTION()
@@ -60,14 +61,15 @@ private:
 	UPROPERTY()
 	APawn* PlayerReference;
 	
-	UPROPERTY(EditInstanceOnly, Category = "SpawnBounds")
+	//redundant
+	/*UPROPERTY(EditInstanceOnly, Category = "SpawnBounds")
 	FVector BoundsLocationX;
 	
 	UPROPERTY(EditInstanceOnly, Category = "SpawnBounds")
-	FVector BoundsLocationY;
+	FVector BoundsLocationY;*/
 	
-	UPROPERTY(EditAnywhere, Category = "Bounds")
-	TObjectPtr<UBoxComponent> EnemySpawnBounds;
+	/*UPROPERTY(EditAnywhere, Category = "Bounds")
+	TObjectPtr<UBoxComponent> EnemySpawnBounds;*/
 	
 	UPROPERTY(EditAnywhere, Category = "Firing")
 	UNiagaraSystem* DeathEffects;
@@ -82,6 +84,7 @@ private:
 	
 	FTimerHandle WaveSpawner_TimeHandler;
 	
+	int16 SectionInt = 0;
 	int16 CurrentWaveInt = 0;
 	int32 EnemyCount = 0;
 	bool bSpawningComplete = false;

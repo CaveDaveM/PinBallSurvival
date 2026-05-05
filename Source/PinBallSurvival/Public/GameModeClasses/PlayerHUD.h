@@ -7,6 +7,7 @@
 #include "Subsystems/WorldStateSubsystem.h"
 #include "PlayerHUD.generated.h"
 
+class UEndGameWidget;
 class UTutorialWidget;
 class UStaticWindow;
 /**
@@ -23,29 +24,33 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Hud")
 	TSubclassOf<UTutorialWidget> TutorialWidgetClass;
 	
+	UPROPERTY(EditDefaultsOnly,Category = "Hud")
+	TSubclassOf<UEndGameWidget> EndOfGameMenuClass;
+	
 	APlayerHUD();
 	void ToggleInGameMenu();
 	void HideInGameMenu();
 	void DisplayInGameMenu();
 	
-	//Hide the tutorial menu 
-	UFUNCTION()
-	void ToggleStartGameMenu(EGamePhase GamePhase) const;
+	//Hide the tutorial menu
 	void HideStartGameMenu() const;
 	void DisplayStartGameMenu() const;
 	
 
 protected:
-	virtual void BeginPlay() override;
 	
 	UPROPERTY()
 	UWorldStateSubsystem* WorldState;
-
 	UPROPERTY()
 	UStaticWindow* StaticMenuWidget;
-	
 	UPROPERTY()
 	UTutorialWidget* TutorialWidget;
+	UPROPERTY()
+	UEndGameWidget* EndGameWidget;
 	
 	bool bIsMenuVisible = false;
+	
+	virtual void BeginPlay() override;
+	void ToggleStartGameMenu(EGamePhase GamePhase) const;
+	void ShowEndGameMenu(EGamePhase GamePhase, bool bIsGameWon);
 };

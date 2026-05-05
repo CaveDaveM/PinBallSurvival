@@ -25,9 +25,9 @@ void APinballGameMode::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("No player controller found"));
 	}
 	
-	FInputModeGameOnly InputMode;
+	PC->bShowMouseCursor = true;
+	FInputModeGameAndUI InputMode;
 	PC->SetInputMode(InputMode);
-	PC->bShowMouseCursor = false;
 }
 
 void APinballGameMode::GameStart()

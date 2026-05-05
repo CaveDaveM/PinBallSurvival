@@ -19,11 +19,12 @@ void APinballGameState::SetCurrentScore(int32 NewScore)
 	OnScoreChange.Broadcast(CurrentScore);
 }
 
-void APinballGameState::SetGamePhase(EGamePhase NewPhase)
+void APinballGameState::SetGamePhase(EGamePhase NewPhase, bool bIsGameWon)
 {
 	// Need to set the game state for the game instance subsystem. since they are persistent from level to level. 
 	GamePhase = NewPhase;
-	OnStateChange.Broadcast(GamePhase);
+	
+	OnStateChange.Broadcast(GamePhase,bIsGameWon);
 }
 
 void APinballGameState::SetHighScore()

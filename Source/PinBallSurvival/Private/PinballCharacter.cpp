@@ -36,8 +36,6 @@ APinballCharacter::APinballCharacter()
 	//Attach the Camera to the SpringArmComponent
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
 	
-	PawnDetectionSphere->SetupAttachment(RootComponent);
-
 	PlayerHUDWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHUDWidget"));
 	PlayerHUDWidget->SetupAttachment(PlayerMesh);
 	PlayerHUDWidget->SetWidgetSpace(EWidgetSpace::World);
@@ -78,14 +76,18 @@ void APinballCharacter::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in StaticWindow.cpp"));
+		UE_LOG(LogLevel, Warning, TEXT("Player Progression not found in Pinball Character"));
 	}
 	WorldState = GetWorld()->GetSubsystem<UWorldStateSubsystem>();
 	if (WorldState)
 	{
 		WorldState->OnGameInProgress.AddUObject(this, &APinballCharacter::StartGame);
 	}
-	//APinballGameState = GetWorld()->GetGameState<APinballGameState>();
+	PinballGS = GetWorld()->GetGameState<APinballGameState>();
+	if (!PinballGS)
+	{
+		UE_LOG(LogLevel, Warning, TEXT("GameState not found in Pinball Character"));
+	}
 	
 	
 	//Players Always on Display that moves around with the player
@@ -249,13 +251,14 @@ void APinballCharacter::ApplyDamage(float DamageAmount)
 	Super::ApplyDamage(DamageAmount);
 	Health -= DamageAmount;
 	CheckPlayerHeath();
+	UpdateHudStats();
 }
 
 void APinballCharacter::CheckPlayerHeath()
 {
 	if (Health < 0.0f)
 	{
-		
+		PinballGS->SetGamePhase(EGamePhase::Ended,false);
 	}
 }
 

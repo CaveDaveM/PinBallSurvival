@@ -7,6 +7,7 @@
 #include "Interfaces/WeaponInterface.h"
 #include "CombatantBaseClass.generated.h"
 
+class UInputAction;
 class ABasicProjectile;
 class USphereComponent;
 
@@ -24,29 +25,18 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* PawnDetectionSphere;
 protected:
-	// Called when the game starts or when spawned
+	UPROPERTY(EditAnywhere, Category ="Input")
+	TObjectPtr<UInputAction> ClickAction;
+	
+	UPROPERTY()
+	APlayerController* PC;
+
+	
 	virtual void BeginPlay() override;
 	
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
-	
-	UFUNCTION()
-	void OverlapEnd(UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor, 
-		UPrimitiveComponent* 
-		OtherComp, 
-		int32 OtherBodyIndex);
-	
-	
-	void FireWeapon();
+	void OnClick();
+	void FireWeapon(FVector ClickedLocation);
 	void UpdatePlayerHealth();
 	virtual void UpdateHudStats();
 	virtual void ShotFired();
