@@ -32,6 +32,6 @@ void ABasicEnemy::ApplyDamageIfInRange()
 {
 	 if (GetDistanceTo(PlayerCharacter) < 50.0f)
 	 {
-		 PlayerCharacter->ApplyDamage(5.0f);
+		 PlayerCharacter->ApplyDamage(EnemyDamage);
 	 }
 }

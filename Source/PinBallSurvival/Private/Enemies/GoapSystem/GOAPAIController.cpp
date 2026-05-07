@@ -304,7 +304,6 @@ void AGOAPAIController::CheckIfAtStoredLocation()
 	{
 		// Stop the timer so it doesn't keep firing
 		SwitchStateOnPlan();
-		GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Yellow, TEXT("CheckIfAtStoredLocation done"));
 		GetWorld()->GetTimerManager().ClearTimer(CheckIfAtLocation_TimerHandle);
 	}
 }

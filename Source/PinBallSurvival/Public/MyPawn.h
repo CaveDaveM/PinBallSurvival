@@ -20,23 +20,23 @@ public:
 	AMyPawn();
 
 		
-	UPROPERTY(editanywhere)
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* PawnMeshComponent;
 	
 	UPROPERTY(EditAnywhere)
 	USphereComponent* PawnOverlapComponent;
 	
+	UPROPERTY(EditAnywhere)
+	UFloatingPawnMovement* FloatingPawnMovement;
+	
 	UPROPERTY(EditDefaultsOnly)
-	float Health = 100;
+	float Health = 500.0f;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	UFUNCTION()
 	void CheckHealth();
-
-	UPROPERTY(VisibleAnywhere)
-	UFloatingPawnMovement* FloatingPawnMovement;
 	
 	
 

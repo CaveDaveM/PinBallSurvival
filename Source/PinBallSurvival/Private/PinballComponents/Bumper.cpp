@@ -68,7 +68,7 @@ void ABumper::PushAwayActor(APinballCharacter* OverlappedActor, FVector HitNorma
 	
 	if (ReflectedVelocity.Size() < MinBumpSpeed)
 	{
-		ReflectedVelocity = Normal * MinBumpSpeed;
+		ReflectedVelocity = Normal * 5000.0f;
 	}
 		
 	OverlappedActor->PlayerMesh->SetPhysicsLinearVelocity(ReflectedVelocity);

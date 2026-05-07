@@ -21,6 +21,10 @@ protected:
 	
 	UPROPERTY()
 	APinballCharacter* PlayerCharacter;
+	
+	UPROPERTY(EditAnywhere)
+	float EnemyDamage = 5;
+	
 	FTimerHandle HitPlayer_TimerHandle;
 	
 	virtual void BeginPlay() override;
