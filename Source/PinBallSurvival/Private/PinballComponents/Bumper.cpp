@@ -5,6 +5,7 @@
 
 #include "PinballCharacter.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABumper::ABumper()
@@ -39,6 +40,7 @@ void ABumper::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 	{
 		FVector HitNormal = SweepResult.ImpactNormal;
 		PushAwayActor(PlayerCharacter, HitNormal);
+		UGameplayStatics::PlaySound2D(this,PushSound,0.5f,1.0f);
 	}
 }
 

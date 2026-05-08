@@ -32,6 +32,8 @@ protected:
 	UPROPERTY()
 	APlayerController* PC;
 
+	UPROPERTY(EditDefaultsOnly, Category ="Input")
+	USoundBase* FireSound;
 	
 	virtual void BeginPlay() override;
 	

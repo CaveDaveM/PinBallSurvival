@@ -126,7 +126,7 @@ void AEnemySpawnManager::StartWaveSelection()
 {
 	EnemyCount = 0;
 	bSpawningComplete = false;
-	EnemySpawnOffsets = FindSpawnOffsets(1000.0f); 
+	EnemySpawnOffsets = FindSpawnOffsets(2000.0f); 
 	GetWorld()->GetTimerManager().SetTimer(
 		WaveSpawner_TimeHandler,
 		this,

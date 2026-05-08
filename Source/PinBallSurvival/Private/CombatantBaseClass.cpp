@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EPinCollisionChannel.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Projectile/BasicProjectile.h"
 
 // Sets default values
@@ -44,9 +45,6 @@ void ACombatantBaseClass::FireWeapon(FVector ClickedLocation)
 {
 	if (CurrentAmmo > 0)
 	{
-
-		
-		
 		FVector CurrentLocation = GetActorLocation();
 		//Spawn Projectile
 		FVector ProjectileDirection = ClickedLocation - CurrentLocation;
@@ -64,6 +62,8 @@ void ACombatantBaseClass::FireWeapon(FVector ClickedLocation)
 			SpawnParams);
 		if (Projectile)
 		{
+			float RandValue = FMath::RandRange(0.25f,0.5f);
+			UGameplayStatics::PlaySound2D(this, FireSound, RandValue,1.0f);
 			Projectile->OverlapComponent->MoveIgnoreActors.Add(this);
 			Projectile->ProjectileDamage = TotalDamage;
 			CurrentAmmo--;

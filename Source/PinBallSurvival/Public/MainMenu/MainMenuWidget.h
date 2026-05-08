@@ -49,6 +49,9 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* ClickSounds;
+	
 	//Play Game Map Choices
 	UFUNCTION()
 	void OnMapOneButtonPressed();

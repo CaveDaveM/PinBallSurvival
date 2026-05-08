@@ -6,6 +6,7 @@
 #include "PlayerProgressionSubsystem.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "Subsystems/WorldStateSubsystem.h"
 
 void UEndGameWidget::NativeOnInitialized()
@@ -54,10 +55,14 @@ void UEndGameWidget::OnGameFinished(bool bIsGameWon)
 		int32 GainedXp = PlayerProgression->CalculateEndGameXP(bIsGameWon);
 		if (bIsGameWon)
 		{
+			UGameplayStatics::PlaySound2D(this,WinGameSound, 0.5f,1.0f);
+
 			DisplayGameStatsWindow(bIsGameWon, GainedXp);
 		}
 		else
 		{
+			UGameplayStatics::PlaySound2D(this,LoseGameSound, 0.5f,1.0f);
+
 			DisplayGameStatsWindow(bIsGameWon, GainedXp);
 		}
 	}

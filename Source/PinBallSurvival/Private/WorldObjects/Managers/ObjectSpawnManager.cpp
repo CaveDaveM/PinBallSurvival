@@ -87,7 +87,6 @@ void AObjectSpawnManager::SortWorldObjects()
 EObjectRarity AObjectSpawnManager::FindRarity()
 {
 	// using a weighted table to ensure rarity when spawning world objects, 
-	// got from https://copyprogramming.com/howto/how-to-make-a-function-that-gets-me-3-diferent-ramdom-numbers
 	float TotalWeight = 0.0f;
 	for (FRarityWeights WorldObject : RarityTable)
 	{
@@ -103,7 +102,6 @@ EObjectRarity AObjectSpawnManager::FindRarity()
 		CumulatedWeight += WorldObject.Weight;
 		if (RandomWeight <= CumulatedWeight)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, *UEnum::GetValueAsString(WorldObject.Rarity));
 			return WorldObject.Rarity;
 		}
 	}

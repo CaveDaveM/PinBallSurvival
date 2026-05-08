@@ -10,6 +10,7 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/SaveGame.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Subsystems/SaveGameSubsytem.h"
 
@@ -140,6 +141,8 @@ void UMainMenuWidget::OnApplyButtonPressed()
 	{
 		Settings->ApplySettings(false);
 		Settings->SaveSettings();
+		
+		UGameplayStatics::PlaySound2D(this,ClickSounds, 0.5f,1.0f);
 	}
 }
 

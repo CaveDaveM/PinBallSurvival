@@ -69,7 +69,7 @@ void AGOAPAIController::MakePlan()
 
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::HasAmmo,OwningAIState.bHasAmmo);
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::InAttackRange,OwningAIState.bIsWithinDistance);
-	CurrentWorldState.WorldFacts.Add(EGOAPFact::LowHealth,bIsInRange);
+	CurrentWorldState.WorldFacts.Add(EGOAPFact::LowHealth,OwningAIState.bIsLowHealth);
 	CurrentWorldState.WorldFacts.Add(EGOAPFact::PlayerDead,false);
 	
 
@@ -132,9 +132,10 @@ void AGOAPAIController::MakePlan()
 void AGOAPAIController::SwitchStateOnPlan()
 {
 
-	if (Plan.Num() == 0)
+	if (Plan.Num() <= 0)
 	{
 		MakePlan();
+		return;
 	}
 	
 	// Grab the first action and remove it from the plan
@@ -203,6 +204,7 @@ void AGOAPAIController::PickupHealth()
 	{
 		//if there are no present health objects in the world, disregard and try to kill the player anyway
 		SwitchStateOnPlan();
+		GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Red, TEXT(" NO PickupHealth"));
 	}
 	else
 	{
@@ -214,6 +216,9 @@ void AGOAPAIController::PickupHealth()
 			&AGOAPAIController::CheckIfAtStoredLocation,
 			CheckRate,
 			true);
+		
+		GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Red, TEXT("Pick up Health"));
+
 	}
 }
 
@@ -277,8 +282,6 @@ void AGOAPAIController::ShootPlayer()
 		return;
 	}
 	OwningPawn->ShootWeapon();
-	GEngine->AddOnScreenDebugMessage(-1,10.0f, FColor::Green, TEXT("Shooting Player"));
-	
 }
 
 void AGOAPAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)

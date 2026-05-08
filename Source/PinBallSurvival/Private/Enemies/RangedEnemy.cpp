@@ -35,7 +35,7 @@ void ARangedEnemy::CollectGOAPData()
 	bool bHasAmmo = CurrentAmmo > 4; 
 	float Distance = GetDistanceTo(PlayerCharacterReference);
 	bool bIsInRange = Distance < TargetDistance;
-	bool bLowHealth = Health < 20.0f; 
+	bool bLowHealth = Health < 500.0f; 
 	GOAPData.bHasAmmo = bHasAmmo;
 	GOAPData.bIsWithinDistance = bIsInRange;
 	GOAPData.bIsLowHealth  = bLowHealth;
@@ -87,7 +87,7 @@ void ARangedEnemy::ApplyDamage(float DamageAmount)
 {
 	Super::ApplyDamage(DamageAmount);
 	
-	if (Health <= 20)
+	if (Health <= 500.0f)
 	{
 		CollectGOAPData();
 	}

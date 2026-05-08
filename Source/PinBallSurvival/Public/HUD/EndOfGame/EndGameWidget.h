@@ -38,8 +38,13 @@ protected:
 	UGameInstanceSubsystem* SaveGameSubsystem;
 	UPROPERTY()
 	UPlayerProgressionSubsystem* PlayerProgression;
+	UPROPERTY(EditAnywhere)
+	USoundBase* WinGameSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* LoseGameSound;
 	
 	UFUNCTION()
 	void OnReturnToMenuButtonClicked();
 	void DisplayGameStatsWindow(bool bIsGameWon, int32 Xp);
+	
 };

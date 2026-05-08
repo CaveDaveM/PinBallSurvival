@@ -21,11 +21,11 @@ bool UGOAPPlanner::Plan(const FGOAPWorldState& CurrentState, const FGOAPWorldSta
 	StartingNode.WorldState = CurrentState;
 	StartingNode.GCost = 0.0f;
 	StartingNode.HCost = CurrentState.HeuristicCost(GOAlState);
-	StartingNode.ParentIndex = -1; //arrays in C start at -1 so this is actually the firstindex
+	StartingNode.ParentIndex = -1;
 	StartingNode.bIsStartingNode = true;
 	
 	OpenList.Add(StartingNode);
-	//TODO: figgure out the perfect amount for max iterations.
+	
 	int32 MaxIterations = 1000;
 	
 	while (OpenList.Num() > 0 && MaxIterations-- > 0)

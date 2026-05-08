@@ -51,7 +51,7 @@ protected:
 	
 	//AttackingData
 	FTimerHandle AttackPlayer_TimerHandle;
-	float ShootRate = 3.0f;
+	float ShootRate = 2.0f;
 	
 	FTimerHandle WalkTimer_TimeHandler;
 	float WalkRate = 0.2f;

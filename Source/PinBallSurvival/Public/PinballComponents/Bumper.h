@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Bumper")
 	float MinBumpSpeed = 800.f; 
 	
+	UPROPERTY(EditAnywhere, Category = "Bumper")
+	USoundBase* PushSound;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

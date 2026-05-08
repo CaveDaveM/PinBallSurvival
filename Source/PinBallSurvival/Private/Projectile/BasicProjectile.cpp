@@ -57,7 +57,8 @@ void ABasicProjectile::OnOverlaBegin(UPrimitiveComponent* OverlappedComponent, A
 		if (IHealthInterface* EnemyInterface = Cast<IHealthInterface>(OtherActor))
 		{
 			EnemyInterface->ApplyDamage(ProjectileDamage);
-			GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"OverLapping Health Actor");
+			GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red, 
+				FString::Printf(TEXT("Health: %.2f "), ProjectileDamage));
 			NumberOfActorsHit++;
 			CheckPiercingPower();
 		}

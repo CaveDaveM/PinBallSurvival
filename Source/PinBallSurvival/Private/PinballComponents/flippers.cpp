@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(GameInfo);
 
@@ -65,6 +66,7 @@ void Aflippers::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	{
 		ApplyForceToPlayerLocal();
 		RotationTimeline->PlayFromStart();
+		UGameplayStatics::PlaySound2D(this, FlipperSound,0.5,1.0f);
 	}
 }
 

@@ -35,7 +35,6 @@ void AHealthPack::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	Super::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
 	
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,TEXT("Healing"));
 	if (OtherActor->GetClass()->ImplementsInterface(UHealthInterface::StaticClass()))
 	{
 		if (IHealthInterface* EnemyInterface = Cast<IHealthInterface>(OtherActor))

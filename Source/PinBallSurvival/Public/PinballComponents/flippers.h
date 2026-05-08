@@ -47,6 +47,9 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category = "Force", meta = (Units="Kilograms"))
 	float PushStrength = 10000.0f;
 	
+	UPROPERTY(EditAnywhere)
+	USoundBase* FlipperSound;
+	
 	UFUNCTION(BlueprintCallable, Category = "Pushback")
 	void OnBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,

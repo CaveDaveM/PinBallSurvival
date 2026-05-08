@@ -47,6 +47,9 @@ protected:
 	UPROPERTY()
 	UNiagaraComponent* SpawnIndication;
 	
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* CollectSound;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
