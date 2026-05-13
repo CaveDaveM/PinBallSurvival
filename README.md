@@ -26,7 +26,5 @@ Status
 In active development as part of a postgraduate dissertation project.
 A 
 short representation of the GOAP working.
+
 https://github.com/user-attachments/assets/1e59f62e-cc65-4369-94c6-769d5ee98619
-
-
-
